@@ -14,7 +14,6 @@ class TaskClass
     const ACTION_DECLINE = 'action_decline';
     const ACTION_CHOOSE = 'action_choose';
 
-
     public ?int $clientId;
     public ?int $executorId;
 
@@ -22,6 +21,10 @@ class TaskClass
     public ?string $action;
 
 
+    /**
+     * Возвращает карту статусов и действий.
+     * @return array[] - массив где ключ - внутреннее имя, а значение - название на русском
+     */
     public function getTaskMap(): array
     {
         return [
@@ -38,59 +41,74 @@ class TaskClass
         ];
     }
 
-    public function __construct($clientId, $executorId)
+    /**
+     * TaskClass constructor.
+     * @param int $clientId - ID заказчика
+     * @param int $executorId - ID исполнителя
+     */
+    public function __construct(int $clientId, int $executorId)
     {
         $this->clientId = $clientId;
         $this->executorId = $executorId;
     }
 
-    public function getNewStatus($status, $action): string
+    /**
+     * Получает статус, в который он перейдет, после совершения указанного действия
+     * @param string $action - действие для статуса
+     * @return string - возвращает новый статус задачи
+     */
+    public function getNewStatus(string $action): string
     {
-        switch ($status) {
-            case self::STATUS_NEW:
-                if ($action == self::ACTION_CANCEL) {
-                    $status = self::STATUS_CANCEL;
-                }
-                if ($action == self::ACTION_RESPOND) {
-                    $status = self::STATUS_NEW;
-                }
-                if ($action == self::ACTION_CHOOSE) {
-                    $status = self::STATUS_IN_WORK;
-                }
+        switch ($action) {
+            case self::ACTION_CANCEL:
+                $this->status = self::STATUS_CANCEL;
                 break;
-            case self::STATUS_IN_WORK:
-                if ($action == self::ACTION_DONE) {
-                    $status = self::STATUS_DONE;
-                }
-                if ($action == self::ACTION_DECLINE) {
-                    $status = self::STATUS_FAILED;
-                }
+            case self::ACTION_DONE:
+                $this->status = self::STATUS_DONE;
                 break;
-            default:
-                return $error = 'Невозможно выполнить действие из данного статуса';
+            case self::ACTION_DECLINE:
+                $this->status = self::STATUS_FAILED;
+                break;
+            case self::ACTION_CHOOSE:
+                $this->status = self::STATUS_IN_WORK;
+                break;
         }
-        return $status;
+        return $this->status;
     }
 
-    public function getActiveActions($status)
+    /**
+     * Возвращает доступные действия для указанного статуса и пользователя
+     * @param string $status - статус задачи
+     * @param int $user - ID пользователя
+     * @return mixed массив с доступными действиями, string c уведомлением нет доступных действий
+     */
+    public function getActiveActions(string $status, int $user)
     {
         switch ($status) {
             case self::STATUS_NEW:
-                $activeActions = [
-                    self::ACTION_RESPOND,
-                    self::ACTION_CANCEL,
-                    self::ACTION_CHOOSE
-                ];
+                if ($user == $this->clientId) {
+                    $activeActions = [
+                        self::ACTION_CHOOSE,
+                        self::ACTION_CANCEL
+                    ];
+                } else {
+                    $activeActions = [self::ACTION_RESPOND];
+                }
                 break;
             case self::STATUS_IN_WORK:
-                $activeActions = [
-                    self::ACTION_DONE,
-                    self::ACTION_DECLINE
-                ];
+                if ($user == $this->clientId) {
+                    $activeActions = [
+                        self::ACTION_DONE,
+                        self::ACTION_DECLINE
+                    ];
+                } elseif ($user == $this->executorId) {
+                    $activeActions = [self::ACTION_DECLINE];
+                } else {
+                    return $notice = 'Нет доступных действий';
+                }
                 break;
             default:
-                return $error = 'Нет доступных действий для этого статуса';
-
+                return $notice = 'Нет доступных действий';
         }
         return $activeActions;
     }
