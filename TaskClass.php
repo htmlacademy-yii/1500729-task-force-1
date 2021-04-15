@@ -18,8 +18,6 @@ class TaskClass
     public ?int $executorId;
 
     public ?string $status;
-    public ?string $action;
-
 
     /**
      * Возвращает карту статусов и действий.
@@ -55,38 +53,42 @@ class TaskClass
     /**
      * Получает статус, в который он перейдет, после совершения указанного действия
      * @param string $action - действие для статуса
-     * @return string - возвращает новый статус задачи
+     * @return string - возвращает статус задачи, в который она перейдет после выполнения указанного действия
+     * @throws Exception - если указано несуществующее действие или
+     * действие из которого невозможно получение нового статуса.
      */
     public function getNewStatus(string $action): string
     {
         switch ($action) {
             case self::ACTION_CANCEL:
-                $this->status = self::STATUS_CANCEL;
+                $newStatus = self::STATUS_CANCEL;
                 break;
             case self::ACTION_DONE:
-                $this->status = self::STATUS_DONE;
+                $newStatus = self::STATUS_DONE;
                 break;
             case self::ACTION_DECLINE:
-                $this->status = self::STATUS_FAILED;
+                $newStatus = self::STATUS_FAILED;
                 break;
             case self::ACTION_CHOOSE:
-                $this->status = self::STATUS_IN_WORK;
+                $newStatus = self::STATUS_IN_WORK;
                 break;
+            default:
+                throw new Exception("Неверно указано действие");
         }
-        return $this->status;
+        return $newStatus;
     }
 
     /**
      * Возвращает доступные действия для указанного статуса и пользователя
      * @param string $status - статус задачи
-     * @param int $user - ID пользователя
-     * @return mixed массив с доступными действиями, string c уведомлением нет доступных действий
+     * @param int $userId - ID пользователя
+     * @return array возвращает массив с доступными действиями
      */
-    public function getActiveActions(string $status, int $user)
+    public function getActiveActions(string $status, int $userId): array
     {
         switch ($status) {
             case self::STATUS_NEW:
-                if ($user == $this->clientId) {
+                if ($userId === $this->clientId) {
                     $activeActions = [
                         self::ACTION_CHOOSE,
                         self::ACTION_CANCEL
@@ -96,19 +98,19 @@ class TaskClass
                 }
                 break;
             case self::STATUS_IN_WORK:
-                if ($user == $this->clientId) {
+                if ($userId === $this->clientId) {
                     $activeActions = [
                         self::ACTION_DONE,
                         self::ACTION_DECLINE
                     ];
-                } elseif ($user == $this->executorId) {
+                } elseif ($userId === $this->executorId) {
                     $activeActions = [self::ACTION_DECLINE];
                 } else {
-                    return $notice = 'Нет доступных действий';
+                    $activeActions = [];
                 }
                 break;
             default:
-                return $notice = 'Нет доступных действий';
+                $activeActions = [];
         }
         return $activeActions;
     }

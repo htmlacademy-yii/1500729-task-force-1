@@ -24,10 +24,13 @@ class TaskClassTest extends TestCase
      * @dataProvider additionProvider
      * @param $a - выбранное действие
      * @param $b - предполагаемый статус
+     * @throws Exception
      */
     public function testGetNewStatus($a, $b)
     {
         $this->assertEquals($b, $this->fixture->getNewStatus($a));
+        $this->expectException(Exception::class);
+
     }
 
     public function additionProvider(): array
@@ -59,8 +62,8 @@ class TaskClassTest extends TestCase
             ['new', 3, ['action_respond']],
             ['in_work', 1, ['action_done', 'action_decline']],
             ['in_work', 2, ['action_decline']],
-            ['in_work', 3, 'Нет доступных действий'],
-            ['done', 1, 'Нет доступных действий']
+            ['in_work', 3, []],
+            ['done', 1, []]
         ];
     }
 
