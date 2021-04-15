@@ -1,7 +1,7 @@
 <?php
-require_once "vendor/autoload.php";
-require_once "TaskClass.php";
+namespace app;
 
+use taskforce\app\TaskClass;
 use PHPUnit\Framework\TestCase;
 
 class TaskClassTest extends TestCase
