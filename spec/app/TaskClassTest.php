@@ -1,6 +1,7 @@
 <?php
 namespace app;
 
+use Exception;
 use taskforce\app\TaskClass;
 use PHPUnit\Framework\TestCase;
 

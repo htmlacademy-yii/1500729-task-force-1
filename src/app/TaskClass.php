@@ -1,6 +1,8 @@
 <?php
 namespace taskforce\app;
 
+use Exception;
+
 class TaskClass
 {
     const STATUS_NEW = 'new';

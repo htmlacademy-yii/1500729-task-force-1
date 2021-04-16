@@ -8,4 +8,4 @@
 Thumbs.db
 /vendor/
 *.lock
-*.cache
+.phpunit.result.cache
