@@ -6,4 +6,5 @@
 *.psd
 *.sublime*
 Thumbs.db
-vendor
+/vendor/
+*.lock

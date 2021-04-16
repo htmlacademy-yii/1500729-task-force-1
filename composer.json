@@ -1,0 +1,13 @@
+{
+  "name": "aleksey/task-force",
+  "authors": [
+    {
+      "name": "Алексей",
+      "email": "anonymous.aleksey@gmail.com"
+    }
+  ],
+  "description": "",
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  }
+}
