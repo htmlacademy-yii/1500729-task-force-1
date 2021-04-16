@@ -29,7 +29,6 @@ class TaskClassTest extends TestCase
     public function testGetNewStatus($a, $b)
     {
         $this->assertEquals($b, $this->fixture->getNewStatus($a));
-        $this->expectException(Exception::class);
 
     }
 
