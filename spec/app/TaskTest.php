@@ -2,13 +2,13 @@
 namespace app;
 
 use Exception;
-use taskforce\app\TaskClass;
+use taskforce\app\Task;
 use PHPUnit\Framework\TestCase;
 
-class TaskClassTest extends TestCase
+class TaskTest extends TestCase
 
 {
-    protected TaskClass $fixture;
+    protected Task $fixture;
     protected int $client;
     protected int $executor;
     protected int $other;
@@ -18,7 +18,7 @@ class TaskClassTest extends TestCase
         $this->client = 1;
         $this->executor = 2;
         $this->other = 3;
-        $this->fixture = new TaskClass($this->client, $this->executor);
+        $this->fixture = new Task($this->client, $this->executor);
     }
 
     /**

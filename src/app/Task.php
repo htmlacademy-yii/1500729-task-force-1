@@ -3,7 +3,7 @@ namespace taskforce\app;
 
 use Exception;
 
-class TaskClass
+class Task
 {
     const STATUS_NEW = 'new';
     const STATUS_CANCEL = 'cancel';
