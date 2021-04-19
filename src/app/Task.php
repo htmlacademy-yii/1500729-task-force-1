@@ -1,6 +1,9 @@
 <?php
+namespace taskforce\app;
 
-class TaskClass
+use Exception;
+
+class Task
 {
     const STATUS_NEW = 'new';
     const STATUS_CANCEL = 'cancel';
