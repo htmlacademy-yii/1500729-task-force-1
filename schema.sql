@@ -6,29 +6,37 @@ DEFAULT COLLATE UTF8_GENERAL_CI;
 
 USE taskforce;
 
+CREATE TABLE files (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    author_id INT,
+    path VARCHAR(128) NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES users(id)
+);
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR (64) NOT NULL,
-    userpick VARCHAR(128),
+    avatar_id INT,
     information TEXT(500),
-    birthday TIMESTAMP,
+    birthday DATE,
     location_id INT,
-    password VARCHAR(128) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     phone VARCHAR (32),
     skype VARCHAR (32),
     telegram VARCHAR (32),
-    dt_last_action TIMESTAMP,
-    show_profile TINYINT(1) DEFAULT 1,
-    show_contacts TINYINT(1) DEFAULT 0,
-    new_message TINYINT(1) DEFAULT 1,
-    new_action TINYINT(1) DEFAULT 1,
-    new_review TINYINT(1) DEFAULT 1,
+    dt_last_activity DATETIME,
+    show_profile TINYINT DEFAULT 1,
+    show_contacts TINYINT DEFAULT 0,
+    notice_new_message TINYINT DEFAULT 1,
+    notice_new_action TINYINT DEFAULT 1,
+    notice_new_review TINYINT DEFAULT 1,
     failed_tasks INT,
     done_tasks INT,
-    role TINYINT(1) DEFAULT 0,
-    FOREIGN KEY (location_id) REFERENCES locations (id)
+    role TINYINT DEFAULT 0,
+    FOREIGN KEY (location_id) REFERENCES locations (id),
+    FOREIGN KEY (avatar_id) REFERENCES files (id)
 );
 
 CREATE TABLE locations (
@@ -38,7 +46,7 @@ CREATE TABLE locations (
 
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     title VARCHAR(128) NOT NULL,
     description VARCHAR (256) NOT NULL,
     category_id INT NOT NULL,
@@ -46,25 +54,22 @@ CREATE TABLE tasks (
     city_id INT,
     location_id VARCHAR(64),
     budget INT,
-    due_date TIMESTAMP,
-    status VARCHAR(32) DEFAULT 'new',
+    due_date DATETIME,
+    status TINYINT DEFAULT 0,
     executor_id INT,
     FOREIGN KEY (author_id) REFERENCES users (id),
     FOREIGN KEY (executor_id) REFERENCES users (id),
     FOREIGN KEY (city_id) REFERENCES locations(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id),
-    FOREIGN KEY (status) REFERENCES statuses(name)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     content VARCHAR(256),
-    status VARCHAR(32),
     task_id INT NOT NULL,
     ratio INT NOT NULL,
-    FOREIGN KEY (task_id) REFERENCES tasks (id),
-    FOREIGN KEY (status) REFERENCES tasks(status)
+    FOREIGN KEY (task_id) REFERENCES tasks (id)
 );
 
 CREATE TABLE categories (
@@ -74,9 +79,10 @@ CREATE TABLE categories (
 
 CREATE TABLE task_files (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    path VARCHAR (128) NOT NULL,
+    file_id INT,
     task_id INT NOT NULL,
-    FOREIGN KEY (task_id) REFERENCES tasks (id)
+    FOREIGN KEY (task_id) REFERENCES tasks (id),
+    FOREIGN KEY (file_id) REFERENCES files (id)
 );
 
 CREATE TABLE executor_categories (
@@ -89,30 +95,28 @@ CREATE TABLE executor_categories (
 
 CREATE TABLE work_photos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    path VARCHAR(128) NOT NULL,
+    photo_id INT,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
-CREATE TABLE statuses (
-    name VARCHAR (32) PRIMARY KEY
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (photo_id) REFERENCES files (id)
 );
 
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     content TEXT(500) NOT NULL,
-    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     task_id INT NOT NULL,
-    executor_id INT NOT NULL,
-    author_id INT NOT NULL,
+    mailer_id INT NOT NULL,
+    recipient_id INT NOT NULL,
+    message_read TINYINT DEFAULT 0,
     FOREIGN KEY (task_id) REFERENCES tasks (id),
-    FOREIGN KEY (executor_id) REFERENCES users (id),
-    FOREIGN KEY (author_id) REFERENCES users (id)
+    FOREIGN KEY (mailer_id) REFERENCES users (id),
+    FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
 
 CREATE TABLE responds (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     budget INT NOT NULL,
     content VARCHAR(256),
     task_id INT NOT NULL,
