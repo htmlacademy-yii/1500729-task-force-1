@@ -8,9 +8,7 @@ USE taskforce;
 
 CREATE TABLE files (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    author_id INT,
-    path VARCHAR(128) NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES users(id)
+    path VARCHAR(128) NOT NULL
 );
 
 CREATE TABLE users (
@@ -19,13 +17,14 @@ CREATE TABLE users (
     email VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR (64) NOT NULL,
     avatar_id INT,
-    information TEXT(500),
+    information TEXT,
     birthday DATE,
     location_id INT,
     password VARCHAR(60) NOT NULL,
     phone VARCHAR (32),
     skype VARCHAR (32),
     telegram VARCHAR (32),
+    other_contact VARCHAR (32),
     dt_last_activity DATETIME,
     show_profile TINYINT DEFAULT 1,
     show_contacts TINYINT DEFAULT 0,
@@ -41,7 +40,14 @@ CREATE TABLE users (
 
 CREATE TABLE locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    city VARCHAR(64) NOT NULL
+    coordinates POINT NOT NULL,
+    city_id INT NOT NULL,
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+CREATE  TABLE cities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR (64)
 );
 
 CREATE TABLE tasks (
@@ -52,7 +58,7 @@ CREATE TABLE tasks (
     category_id INT NOT NULL,
     author_id INT NOT NULL,
     city_id INT,
-    location_id VARCHAR(64),
+    location_id INT,
     budget INT,
     due_date DATETIME,
     status TINYINT DEFAULT 0,
@@ -60,7 +66,8 @@ CREATE TABLE tasks (
     FOREIGN KEY (author_id) REFERENCES users (id),
     FOREIGN KEY (executor_id) REFERENCES users (id),
     FOREIGN KEY (city_id) REFERENCES locations(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (location_id) REFERENCES locations(id)
 );
 
 CREATE TABLE reviews (
@@ -95,10 +102,10 @@ CREATE TABLE executor_categories (
 
 CREATE TABLE work_photos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    photo_id INT,
+    file_id INT,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (photo_id) REFERENCES files (id)
+    FOREIGN KEY (file_id) REFERENCES files (id)
 );
 
 CREATE TABLE messages (
@@ -106,11 +113,11 @@ CREATE TABLE messages (
     content TEXT(500) NOT NULL,
     dt_add DATETIME DEFAULT CURRENT_TIMESTAMP,
     task_id INT NOT NULL,
-    mailer_id INT NOT NULL,
+    sender_id INT NOT NULL,
     recipient_id INT NOT NULL,
     message_read TINYINT DEFAULT 0,
     FOREIGN KEY (task_id) REFERENCES tasks (id),
-    FOREIGN KEY (mailer_id) REFERENCES users (id),
+    FOREIGN KEY (sender_id) REFERENCES users (id),
     FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
 
