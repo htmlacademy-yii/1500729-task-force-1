@@ -1,4 +1,5 @@
 <?php
+
 namespace app;
 
 use Exception;
@@ -15,6 +16,7 @@ class TaskTest extends TestCase
 
     protected function setUp(): void
     {
+
         $this->client = 1;
         $this->executor = 2;
         $this->other = 3;
@@ -58,7 +60,7 @@ class TaskTest extends TestCase
     {
         return [
             ['new', 1, ['action_cancel', 'action_choose']],
-            ['new', 2, ['action_respond']],
+            ['new', 4, ['action_respond']],
             ['new', 3, ['action_respond']],
             ['in_work', 1, ['action_done', 'action_decline']],
             ['in_work', 2, ['action_decline']],
