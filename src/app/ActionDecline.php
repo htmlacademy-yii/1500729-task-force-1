@@ -7,15 +7,8 @@ namespace taskforce\app;
 class ActionDecline extends AbstractTaskAction
 {
 
-    public function getActionName(): string
-    {
-        return 'Отказаться';
-    }
-
-    public function getAction(): string
-    {
-        return 'action_decline';
-    }
+    protected string $actionName = 'Отказаться';
+    protected string $action = 'action_decline';
 
     public function compareID(int $executorId, int $userId, int $clientId): bool
     {
