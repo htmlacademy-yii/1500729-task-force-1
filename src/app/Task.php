@@ -97,30 +97,24 @@ class Task
      */
     public function getActiveActions(string $status, int $userId): array
     {
-        $activeActions = [];
-        switch ($status) {
-            case self::STATUS_NEW:
-                if ($this->actionCancel->compareID($this->executorId, $userId, $this->clientId)) {
+         $activeActions = [];
+                if ($this->actionCancel->canUse($this->executorId, $userId, $this->clientId, $status)) {
                     $activeActions[] = $this->actionCancel->getAction();
                 }
-                if ($this->actionRespond->compareID($this->executorId, $userId, $this->clientId)) {
+                if ($this->actionRespond->canUse($this->executorId, $userId, $this->clientId, $status)) {
                     $activeActions[] = $this->actionRespond->getAction();
                 }
-                if ($this->actionChoose->compareID($this->executorId, $userId, $this->clientId)) {
+                if ($this->actionChoose->canUse($this->executorId, $userId, $this->clientId, $status)) {
                     $activeActions[] = $this->actionChoose->getAction();
                 }
-                break;
-            case self::STATUS_IN_WORK:
-                if ($this->actionDone->compareID($this->executorId, $userId, $this->clientId)) {
+                if ($this->actionDone->canUse($this->executorId, $userId, $this->clientId, $status)) {
                     $activeActions[] = $this->actionDone->getAction();
                 }
-                if ($this->actionDecline->compareID($this->executorId, $userId, $this->clientId)) {
+                if ($this->actionDecline->canUse($this->executorId, $userId, $this->clientId, $status)) {
                     $activeActions[] = $this->actionDecline->getAction();
                 }
-                break;
-            default:
-                $activeActions = [];
-        }
+
+
         return $activeActions;
     }
 }

@@ -10,9 +10,9 @@ class ActionRespond extends AbstractTaskAction
     protected string $actionName = 'Взять в работу';
     protected string $action = 'action_respond';
 
-    public function compareID(int $executorId, int $userId, int $clientId): bool
+    public function canUse(int $executorId, int $userId, int $clientId, string $status): bool
     {
-        if ($userId !== $executorId && $userId !== $clientId) {
+        if ($userId !== $executorId && $userId !== $clientId && $status === task::STATUS_NEW) {
             return true;
         } else {
             return false;

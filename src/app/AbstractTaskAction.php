@@ -21,6 +21,6 @@ abstract class AbstractTaskAction
     }
 
 
-    abstract protected function compareID(int $executorId, int $userId, int $clientId);
+    abstract protected function canUse(int $executorId, int $userId, int $clientId, string $status);
 }
 
