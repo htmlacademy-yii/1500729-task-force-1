@@ -19,7 +19,7 @@ class Task
     const STATUS_DONE = 'done';
     const STATUS_FAILED = 'failed';
 
-    public int $clientId;
+    public int $authorId;
     public int $executorId;
 
     public ?string $status;
@@ -46,17 +46,17 @@ class Task
 
     /**
      * TaskClass constructor.
-     * @param int $clientId - ID заказчика
+     * @param int $authorId - ID заказчика
      * @param int $executorId - ID исполнителя
      */
-    public function __construct(int $clientId, int $executorId)
+    public function __construct(int $authorId, int $executorId)
     {
         $this->actionCancel = new ActionCancel();
         $this->actionChoose = new ActionChoose();
         $this->actionRespond = new ActionRespond();
         $this->actionDone = new ActionDone();
         $this->actionDecline = new ActionDecline();
-        $this->clientId = $clientId;
+        $this->authorId = $authorId;
         $this->executorId = $executorId;
 
     }
@@ -98,19 +98,19 @@ class Task
     public function getActiveActions(string $status, int $userId): array
     {
          $activeActions = [];
-                if ($this->actionCancel->canUse($this->executorId, $userId, $this->clientId, $status)) {
+                if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionCancel->getAction();
                 }
-                if ($this->actionRespond->canUse($this->executorId, $userId, $this->clientId, $status)) {
+                if ($this->actionRespond->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionRespond->getAction();
                 }
-                if ($this->actionChoose->canUse($this->executorId, $userId, $this->clientId, $status)) {
+                if ($this->actionChoose->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionChoose->getAction();
                 }
-                if ($this->actionDone->canUse($this->executorId, $userId, $this->clientId, $status)) {
+                if ($this->actionDone->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionDone->getAction();
                 }
-                if ($this->actionDecline->canUse($this->executorId, $userId, $this->clientId, $status)) {
+                if ($this->actionDecline->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionDecline->getAction();
                 }
 
