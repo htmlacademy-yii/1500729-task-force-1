@@ -7,11 +7,6 @@ use Exception;
 
 class Task
 {
-    protected object $actionCancel;
-    protected object $actionChoose;
-    protected object $actionRespond;
-    protected object $actionDone;
-    protected object $actionDecline;
 
     const STATUS_NEW = 'new';
     const STATUS_CANCEL = 'cancel';
@@ -23,6 +18,12 @@ class Task
     public int $executorId;
 
     public ?string $status;
+
+    private ActionCancel $actionCancel;
+    private ActionChoose $actionChoose;
+    private ActionRespond $actionRespond;
+    private ActionDone $actionDone;
+    private ActionDecline $actionDecline;
 
     /**
      * Возвращает карту статусов и действий.
