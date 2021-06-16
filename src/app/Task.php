@@ -1,26 +1,29 @@
 <?php
+
 namespace taskforce\app;
 
 use Exception;
 
+
 class Task
 {
+
     const STATUS_NEW = 'new';
     const STATUS_CANCEL = 'cancel';
     const STATUS_IN_WORK = 'in_work';
     const STATUS_DONE = 'done';
     const STATUS_FAILED = 'failed';
 
-    const ACTION_CANCEL = 'action_cancel';
-    const ACTION_RESPOND = 'action_respond';
-    const ACTION_DONE = 'action_done';
-    const ACTION_DECLINE = 'action_decline';
-    const ACTION_CHOOSE = 'action_choose';
-
-    public ?int $clientId;
-    public ?int $executorId;
+    public int $authorId;
+    public int $executorId;
 
     public ?string $status;
+
+    private ActionCancel $actionCancel;
+    private ActionChoose $actionChoose;
+    private ActionRespond $actionRespond;
+    private ActionDone $actionDone;
+    private ActionDecline $actionDecline;
 
     /**
      * Возвращает карту статусов и действий.
@@ -34,23 +37,29 @@ class Task
             self::STATUS_IN_WORK => 'В работе',
             self::STATUS_DONE => 'Задача выполнена',
             self::STATUS_FAILED => 'Задача провалена',
-            self::ACTION_CANCEL => 'Отменить задачу',
-            self::ACTION_RESPOND => 'Взять в работу',
-            self::ACTION_DONE => 'Выполнить задачу',
-            self::ACTION_DECLINE => 'Отказаться',
-            self::ACTION_CHOOSE => 'Выбрать исполнителя'
+            $this->actionCancel->getAction() => $this->actionCancel->getActionName(),
+            $this->actionRespond->getAction() => $this->actionRespond->getActionName(),
+            $this->actionDone->getAction() => $this->actionDone->getActionName(),
+            $this->actionDecline->getAction() => $this->actionDecline->getActionName(),
+            $this->actionChoose->getAction() => $this->actionChoose->getActionName()
         ];
     }
 
     /**
      * TaskClass constructor.
-     * @param int $clientId - ID заказчика
+     * @param int $authorId - ID заказчика
      * @param int $executorId - ID исполнителя
      */
-    public function __construct(int $clientId, int $executorId)
+    public function __construct(int $authorId, int $executorId)
     {
-        $this->clientId = $clientId;
+        $this->actionCancel = new ActionCancel();
+        $this->actionChoose = new ActionChoose();
+        $this->actionRespond = new ActionRespond();
+        $this->actionDone = new ActionDone();
+        $this->actionDecline = new ActionDecline();
+        $this->authorId = $authorId;
         $this->executorId = $executorId;
+
     }
 
     /**
@@ -63,16 +72,16 @@ class Task
     public function getNewStatus(string $action): string
     {
         switch ($action) {
-            case self::ACTION_CANCEL:
+            case $this->actionCancel->getAction():
                 $newStatus = self::STATUS_CANCEL;
                 break;
-            case self::ACTION_DONE:
+            case $this->actionDone->getAction():
                 $newStatus = self::STATUS_DONE;
                 break;
-            case self::ACTION_DECLINE:
+            case $this->actionDecline->getAction():
                 $newStatus = self::STATUS_FAILED;
                 break;
-            case self::ACTION_CHOOSE:
+            case $this->actionChoose->getAction():
                 $newStatus = self::STATUS_IN_WORK;
                 break;
             default:
@@ -89,32 +98,24 @@ class Task
      */
     public function getActiveActions(string $status, int $userId): array
     {
-        switch ($status) {
-            case self::STATUS_NEW:
-                if ($userId === $this->clientId) {
-                    $activeActions = [
-                        self::ACTION_CHOOSE,
-                        self::ACTION_CANCEL
-                    ];
-                } else {
-                    $activeActions = [self::ACTION_RESPOND];
+         $activeActions = [];
+                if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = $this->actionCancel->getAction();
                 }
-                break;
-            case self::STATUS_IN_WORK:
-                if ($userId === $this->clientId) {
-                    $activeActions = [
-                        self::ACTION_DONE,
-                        self::ACTION_DECLINE
-                    ];
-                } elseif ($userId === $this->executorId) {
-                    $activeActions = [self::ACTION_DECLINE];
-                } else {
-                    $activeActions = [];
+                if ($this->actionRespond->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = $this->actionRespond->getAction();
                 }
-                break;
-            default:
-                $activeActions = [];
-        }
+                if ($this->actionChoose->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = $this->actionChoose->getAction();
+                }
+                if ($this->actionDone->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = $this->actionDone->getAction();
+                }
+                if ($this->actionDecline->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = $this->actionDecline->getAction();
+                }
+
+
         return $activeActions;
     }
 }
