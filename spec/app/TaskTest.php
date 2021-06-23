@@ -2,9 +2,10 @@
 
 namespace app;
 
-use Exception;
 use taskforce\app\Task;
 use PHPUnit\Framework\TestCase;
+use exceptions\app\actionException;
+use exceptions\app\statusException;
 
 class TaskTest extends TestCase
 
@@ -27,7 +28,7 @@ class TaskTest extends TestCase
      * @dataProvider additionProvider
      * @param $a - выбранное действие
      * @param $b - предполагаемый статус
-     * @throws Exception
+     * @throws actionException
      */
     public function testGetNewStatus($a, $b)
     {
@@ -50,6 +51,7 @@ class TaskTest extends TestCase
      * @param $a - статус задачи
      * @param $b - id пользователя(заказчик, исполнитель или третье лицо)
      * @param $c - предполагаемые доступные действия из этого статуса или уведомления что их нет
+     * @throws statusException
      */
     public function testGetActiveActions($a, $b, $c)
     {
