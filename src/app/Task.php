@@ -2,8 +2,8 @@
 
 namespace taskforce\app;
 
-use taskforce\exc\ActionException;
-use taskforce\exc\StatusException;
+use taskforce\exceptions\ActionException;
+use taskforce\exceptions\StatusException;
 
 
 class Task

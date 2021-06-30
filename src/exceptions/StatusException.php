@@ -1,7 +1,7 @@
 <?php
 
 
-namespace taskforce\exc;
+namespace taskforce\exceptions;
 
 use Exception;
 

@@ -4,8 +4,8 @@ namespace app;
 
 use taskforce\app\Task;
 use PHPUnit\Framework\TestCase;
-use taskforce\exc\ActionException;
-use taskforce\exc\StatusException;
+use taskforce\exceptions\ActionException;
+use taskforce\exceptions\StatusException;
 
 class TaskTest extends TestCase
 
