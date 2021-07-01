@@ -2,7 +2,8 @@
 
 namespace taskforce\app;
 
-use Exception;
+use taskforce\exceptions\ActionException;
+use taskforce\exceptions\StatusException;
 
 
 class Task
@@ -66,7 +67,7 @@ class Task
      * Получает статус, в который он перейдет, после совершения указанного действия
      * @param string $action - действие для статуса
      * @return string - возвращает статус задачи, в который она перейдет после выполнения указанного действия
-     * @throws Exception - если указано несуществующее действие или
+     * @throws actionException - если указано несуществующее действие или
      * действие из которого невозможно получение нового статуса.
      */
     public function getNewStatus(string $action): string
@@ -85,7 +86,7 @@ class Task
                 $newStatus = self::STATUS_IN_WORK;
                 break;
             default:
-                throw new Exception("Неверно указано действие");
+                throw new ActionException("Неверно указано действие");
         }
         return $newStatus;
     }
@@ -95,9 +96,13 @@ class Task
      * @param string $status - статус задачи
      * @param int $userId - ID пользователя
      * @return array возвращает массив с доступными действиями
+     * @throws statusException - указано несуществующий статус
      */
     public function getActiveActions(string $status, int $userId): array
     {
+        if (!array_key_exists($status, $this->getTaskMap())) {
+            throw new StatusException("Такого статуса не существует");
+        }
          $activeActions = [];
                 if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionCancel->getAction();
