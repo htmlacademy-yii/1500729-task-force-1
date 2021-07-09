@@ -3,7 +3,6 @@
 
 namespace taskforce\utils;
 
-
 use RuntimeException;
 use taskforce\exceptions\FileException;
 use SplFileObject;
@@ -14,7 +13,7 @@ class ExportCsv
     private SplFileObject $fileobject;
     private CreateSQL $createSQL;
 
-    private array $res = [];
+    private array $res;
 
     public function __construct(string $filename)
     {
@@ -36,27 +35,23 @@ class ExportCsv
         return $this->fileobject->fgetcsv();
     }
 
-    public function getNextLine(): array
+    public function getNextLine(): ?iterable
     {
-
         while (!$this->fileobject->eof()) {
-            $this->res[] = $this->fileobject->fgetcsv();
+            yield $this->fileobject->fgetcsv();
         }
-        return $this->res;
-    }
-
-    public function getQuery(): string
-    {
-        $this->createSQL = new CreateSQL($this->getHeaderData(), $this->getNextLine(), $this->filename);
-        return $this->createSQL->getQuery();
     }
 
     public function createFileSQL(): void
     {
+        $this->createSQL = new CreateSQL($this->getHeaderData(), $this->filename);
+
         try {
-            $content = $this->getQuery();
             $fp = fopen('data/' . $this->createSQL->getTableName() . '.sql', "w");
-            fwrite($fp, $content);
+            foreach ($this->getNextLine() as $line) {
+                $content = $this->createSQL->getQuery($line);
+                fwrite($fp, $content);
+            }
             fclose($fp);
         } catch (RuntimeException $exception) {
             throw new FileException("Не удалось создать дамп из файла " . $this->filename);

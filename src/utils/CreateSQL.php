@@ -7,15 +7,14 @@ namespace taskforce\utils;
 class CreateSQL
 {
     private array $dataHead;
-    private array $data;
+    public array $data;
     private string $table;
 
 
-    public function __construct(array $dataHead, array $data, string $table)
+    public function __construct(array $dataHead, string $table)
     {
         $this->dataHead = $dataHead;
         $this->table = $table;
-        $this->data = $data;
     }
 
     private function getRow(): string
@@ -23,22 +22,18 @@ class CreateSQL
         return trim(implode(', ', $this->dataHead));
     }
 
-    public function getQuery(): string
+    public function getQuery($data): string
     {
-        foreach ($this->getValues() as $string) {
-            $value = $string;
-            $query[] = 'INSERT INTO ' . $this->getTableName() . '(' . $this->getRow() . ') VALUES (' . $value . ');';
-        }
-        return implode('', $query);
+        $value = $this->getValues($data);
+        return $query = 'INSERT INTO ' . $this->getTableName() . '(' . $this->getRow() . ') VALUES (' . $value . ');';
+
     }
 
-    public function getValues(): iterable
+    public function getValues($data): string
     {
-        foreach ($this->data as $values) {
-            yield implode(', ', array_map(function ($string) {
+            return implode(', ', array_map(function ($string) {
                 return '"' . $string . '"';
-            }, $values));
-        }
+            }, $data));
     }
 
     public function getTableName(): string
