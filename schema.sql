@@ -19,6 +19,7 @@ CREATE TABLE users (
     avatar_id INT,
     information TEXT,
     birthday DATE,
+    address VARCHAR(64),
     location_id INT,
     password VARCHAR(60) NOT NULL,
     phone VARCHAR (32),
@@ -40,9 +41,9 @@ CREATE TABLE users (
 
 CREATE TABLE locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    coordinates POINT NOT NULL,
-    city_id INT NOT NULL,
-    FOREIGN KEY (city_id) REFERENCES cities(id)
+    latitude FLOAT(10,7) NOT NULL,
+    longtitude FLOAT(10,7) NOT NULL,
+    location VARCHAR (64)
 );
 
 CREATE  TABLE cities (
@@ -58,6 +59,7 @@ CREATE TABLE tasks (
     category_id INT NOT NULL,
     author_id INT NOT NULL,
     city_id INT,
+    address VARCHAR(64),
     location_id INT,
     budget INT,
     due_date DATETIME,
@@ -81,7 +83,8 @@ CREATE TABLE reviews (
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR (32) NOT NULL UNIQUE
+    title VARCHAR (32) NOT NULL UNIQUE,
+    icon VARCHAR (32)
 );
 
 CREATE TABLE task_files (
