@@ -82,8 +82,8 @@ AppAsset::register($this);
             </div>
             <div class="header__nav">
                 <ul class="header-nav__list site-list">
-                    <li class="site-list__item">
-                        <a href="browse.html">Задания</a>
+                    <li class="site-list__item site-list__item--active">
+                        <a href="#">Задания</a>
                     </li>
                     <li class="site-list__item">
                         <a href="users.html">Исполнители</a>
@@ -110,15 +110,15 @@ AppAsset::register($this);
                 <h3>Новые события</h3>
                 <p class="lightbulb__new-task lightbulb__new-task--message">
                     Новое сообщение в чате
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
                 </p>
                 <p class="lightbulb__new-task lightbulb__new-task--executor">
                     Выбран исполнитель для
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
                 </p>
                 <p class="lightbulb__new-task lightbulb__new-task--close">
                     Завершено задание
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
                 </p>
             </div>
             <div class="header__account">
@@ -129,7 +129,7 @@ AppAsset::register($this);
                 </a>
                 <span class="header__account-name">
                  Василий
-                </span>
+             </span>
             </div>
             <div class="account__pop-up">
                 <ul class="account__pop-up-list">
@@ -147,61 +147,56 @@ AppAsset::register($this);
         </div>
     </header>
 
-    <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
+
         <?= $content ?>
-    </div>
+
+
+    <footer class="page-footer">
+        <div class="main-container page-footer__container">
+            <div class="page-footer__info">
+                <p class="page-footer__info-copyright">
+                    © <?= date('Y') ?>, ООО «ТаскФорс»
+                    Все права защищены
+                </p>
+                <p class="page-footer__info-use">
+                    «TaskForce» — это сервис для поиска исполнителей на разовые задачи.
+                    mail@taskforce.com
+                </p>
+            </div>
+            <div class="page-footer__links">
+                <ul class="links__list">
+                    <li class="links__item">
+                        <a href="browse.html">Задания</a>
+                    </li>
+                    <li class="links__item">
+                        <a href="account.html">Мой профиль</a>
+                    </li>
+                    <li class="links__item">
+                        <a href="users.html">Исполнители</a>
+                    </li>
+                    <li class="links__item">
+                        <a href="signup.html">Регистрация</a>
+                    </li>
+                    <li class="links__item">
+                        <a href="create.html">Создать задание</a>
+                    </li>
+                    <li class="links__item">
+                        <a href="">Справка</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="page-footer__copyright">
+                <a>
+                    <img class="copyright-logo"
+                         src="./img/academy-logo.png"
+                         width="185" height="63"
+                         alt="Логотип HTML Academy">
+                </a>
+            </div>
+        </div>
+    </footer>
 
 </div>
-<footer class="page-footer">
-    <div class="main-container page-footer__container">
-        <div class="page-footer__info">
-            <p class="page-footer__info-copyright">
-                © <?= date('Y') ?>, ООО «ТаскФорс»
-                Все права защищены
-            </p>
-            <p class="page-footer__info-use">
-                «TaskForce» — это сервис для поиска исполнителей на разовые задачи.
-                mail@taskforce.com
-            </p>
-        </div>
-        <div class="page-footer__links">
-            <ul class="links__list">
-                <li class="links__item">
-                    <a href="browse.html">Задания</a>
-                </li>
-                <li class="links__item">
-                    <a href="account.html">Мой профиль</a>
-                </li>
-                <li class="links__item">
-                    <a href="users.html">Исполнители</a>
-                </li>
-                <li class="links__item">
-                    <a href="signup.html">Регистрация</a>
-                </li>
-                <li class="links__item">
-                    <a href="create.html">Создать задание</a>
-                </li>
-                <li class="links__item">
-                    <a href="">Справка</a>
-                </li>
-            </ul>
-        </div>
-        <div class="page-footer__copyright">
-            <a>
-                <img class="copyright-logo"
-                     src="./img/academy-logo.png"
-                     width="185" height="63"
-                     alt="Логотип HTML Academy">
-            </a>
-        </div>
-    </div>
-</footer>
-
-
 <?php $this->endBody() ?>
 </body>
 </html>

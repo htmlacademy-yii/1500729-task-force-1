@@ -43,7 +43,9 @@ use Yii;
  */
 class Users extends \yii\db\ActiveRecord
 {
-    /**
+    const ROLE_EXECUTOR = 1;
+    const ROLE_AUTHOR = 0;
+        /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -104,7 +106,7 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[ExecutorCategories]].
+     * Gets query for [[ExecutorCategoriesFixture]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -180,6 +182,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getAvatar()
     {
+
         return $this->hasOne(Files::class, ['id' => 'avatar_id']);
     }
 

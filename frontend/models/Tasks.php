@@ -20,6 +20,7 @@ use Yii;
  * @property string|null $due_date
  * @property int|null $status
  * @property int|null $executor_id
+ * @property string $location0
  *
  * @property Messages[] $messages
  * @property Responds[] $responds
@@ -33,6 +34,11 @@ use Yii;
  */
 class Tasks extends \yii\db\ActiveRecord
 {
+    const STATUS_NEW = 0;
+    const STATUS_CANCEL = 1;
+    const STATUS_IN_WORK = 2;
+    const STATUS_DONE = 3;
+    const STATUS_FAILED = 4;
     /**
      * {@inheritdoc}
      */
@@ -80,6 +86,7 @@ class Tasks extends \yii\db\ActiveRecord
             'due_date' => 'Due Date',
             'status' => 'Status',
             'executor_id' => 'Executor ID',
+            'location' => 'Location'
         ];
     }
 
