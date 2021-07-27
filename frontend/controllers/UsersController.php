@@ -20,12 +20,12 @@ class UsersController extends \yii\web\Controller
 
     public static function getStars ($id) {
         $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
-        $Query = new Query();
-        $Query->select(['ROUND(AVG(ratio),2)'])->from('reviews')->
+        $query = new Query();
+        $query->select(['AVG(ratio)'])->from('reviews')->
         where(['task_id' => $userTasksQuery]);
-         $stars = $Query->one();
-         if ($stars['ROUND(AVG(ratio),2)']) {
-             return $stars['ROUND(AVG(ratio),2)'];
+         $stars = $query->one();
+         if ($stars['AVG(ratio)']) {
+             return round($stars['AVG(ratio)'], 2);
          } else {
              return 0;
          }
