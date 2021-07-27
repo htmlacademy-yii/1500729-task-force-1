@@ -16,11 +16,19 @@ $this->title = 'Задания';
                 <div class="feedback-card__top">
                     <div class="user__search-icon">
                         <a href="user.html"><img src="./img/man-glasses.jpg" width="65" height="65"></a>
-                        <span><?= UsersController::getPluralTasks(count($user->tasks0))  ?></span>
+                        <span><?= Yii::$app->i18n->format(
+                            '{n, plural, =0{0 заданий} =1{1 задание}
+                                    one{# задание} few{# задания} many{# заданий} other{# задания}}',
+                                    ['n' => count($user->tasks0)],
+                            'ru_RU')  ?></span>
                         <?php foreach ($user->tasks0 as $task) {
                             $count = $count + count ($task->reviews);
                         } ?>
-                        <span><?= UsersController::getPluralReviews($count) ?> </span>
+                        <span><?= Yii::$app->i18n->format(
+                            '{n, plural, =0{0 отзывов} =1{1 отзыв} one{# отзыв}
+                                     few{# отзыва} many{# отзывов} other{# отзыва}}',
+                                     ['n' => $count],
+                            'ru_RU') ?> </span>
                     </div>
                     <div class="feedback-card__top--name user__search-card">
                         <p class="link-name"><a href="user.html" class="link-regular"><?= Html::encode($user->name) ?></a></p>
