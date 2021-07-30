@@ -11,7 +11,7 @@ $this->title = 'Задания';
         <section class="user__search">
             <?php foreach ($users as $user): ?>
                 <?php $count = 0;
-                      $stars = UsersController::getStars($user->id)?>
+                      $stars = round($user->calculateStars($user->id),2); ?>
             <div class="content-view__feedback-card user__search-wrapper">
                 <div class="feedback-card__top">
                     <div class="user__search-icon">

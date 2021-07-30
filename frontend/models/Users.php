@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "users".
@@ -194,5 +195,17 @@ class Users extends \yii\db\ActiveRecord
     public function getWorkPhotos()
     {
         return $this->hasMany(WorkPhotos::class, ['user_id' => 'id']);
+    }
+    public function calculateStars ($id) {
+        $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
+        $query = new Query();
+        $query->select(['AVG(ratio)'])->from('reviews')->
+        where(['task_id' => $userTasksQuery]);
+        $stars = $query->one();
+        if ($stars['AVG(ratio)']) {
+            return $stars['AVG(ratio)'];
+        } else {
+            return 0;
+        }
     }
 }

@@ -13,11 +13,16 @@ class m210723_160941_update_role_users extends Migration
      */
     public function safeUp()
     {
+        $sql = file_get_contents('data/schema.sql');
+        $this->execute($sql);
+
+
         $users = Users::find()->all();
         foreach ($users as $user) {
             $this->update('users', ['role' => rand(0,1)], ['id' => $user->id]);
         }
     }
+
 
     /**
      * {@inheritdoc}
