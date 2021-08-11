@@ -36,8 +36,8 @@ use yii\db\Query;
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Responds[] $responds
- * @property Tasks[] $tasks
- * @property Tasks[] $tasks0
+ * @property Tasks[] $ownTasks
+ * @property Tasks[] $executeTasks
  * @property Locations $location
  * @property Files $avatar
  * @property WorkPhotos[] $workPhotos
@@ -147,21 +147,21 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Tasks]].
+     * Gets query for [[OwnTasks]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks()
+    public function getOwnTasks()
     {
         return $this->hasMany(Tasks::class, ['author_id' => 'id']);
     }
 
     /**
-     * Gets query for [[Tasks0]].
+     * Gets query for [[ExecuteTasks]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks0()
+    public function getExecuteTasks()
     {
         return $this->hasMany(Tasks::class, ['executor_id' => 'id']);
     }

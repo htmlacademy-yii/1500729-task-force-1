@@ -15,18 +15,11 @@ class m210723_160941_firstmigration extends Migration
     {
         $data = ['data/schema.sql',
             'data/categories.sql',
-            'data/locations.sql',
-            'data/users.sql',
-            'data/tasks.sql'];
+            'data/locations.sql'];
 
         foreach ($data as $file) {
             $sql = file_get_contents($file);
             $this->execute($sql);
-        }
-
-        $users = Users::find()->all();
-        foreach ($users as $user) {
-            $this->update('users', ['role' => rand(0,1)], ['id' => $user->id]);
         }
     }
 

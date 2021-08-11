@@ -1,5 +1,6 @@
 <?php
 /* @var $this yii\web\View */
+/* @var $users \frontend\models\Users[] */
 use yii\helpers\Html;
 use frontend\controllers\UsersController;
 
@@ -19,9 +20,9 @@ $this->title = 'Задания';
                         <span><?= Yii::$app->i18n->format(
                             '{n, plural, =0{0 заданий} =1{1 задание}
                                     one{# задание} few{# задания} many{# заданий} other{# задания}}',
-                                    ['n' => count($user->tasks0)],
+                                    ['n' => count($user->executeTasks)],
                             'ru_RU')  ?></span>
-                        <?php foreach ($user->tasks0 as $task) {
+                        <?php foreach ($user->executeTasks as $task) {
                             $count = $count + count ($task->reviews);
                         } ?>
                         <span><?= Yii::$app->i18n->format(
