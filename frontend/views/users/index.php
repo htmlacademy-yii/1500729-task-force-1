@@ -1,6 +1,9 @@
 <?php
 /* @var $this yii\web\View */
 /* @var $users \frontend\models\Users[] */
+
+use taskforce\app\StarsWidget;
+use taskforce\helpers\PluralHelper;
 use yii\helpers\Html;
 use frontend\controllers\UsersController;
 
@@ -17,27 +20,17 @@ $this->title = 'Задания';
                 <div class="feedback-card__top">
                     <div class="user__search-icon">
                         <a href="user.html"><img src="./img/man-glasses.jpg" width="65" height="65"></a>
-                        <span><?= Yii::$app->i18n->format(
-                            '{n, plural, =0{0 заданий} =1{1 задание}
-                                    one{# задание} few{# задания} many{# заданий} other{# задания}}',
-                                    ['n' => count($user->executeTasks)],
-                            'ru_RU')  ?></span>
+                        <span><?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
+                                                        count($user->executeTasks)) ?></span>
                         <?php foreach ($user->executeTasks as $task) {
                             $count = $count + count ($task->reviews);
                         } ?>
-                        <span><?= Yii::$app->i18n->format(
-                            '{n, plural, =0{0 отзывов} =1{1 отзыв} one{# отзыв}
-                                     few{# отзыва} many{# отзывов} other{# отзыва}}',
-                                     ['n' => $count],
-                            'ru_RU') ?> </span>
+                        <span><?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
+                                                        $count) ?> </span>
                     </div>
                     <div class="feedback-card__top--name user__search-card">
                         <p class="link-name"><a href="user.html" class="link-regular"><?= Html::encode($user->name) ?></a></p>
-                        <span <?= $stars < 1 ? 'class="star-disabled"':'' ?>></span>
-                        <span <?=$stars < 2 ? 'class="star-disabled"':'' ?>></span>
-                        <span <?=$stars < 3 ? 'class="star-disabled"':'' ?>></span>
-                        <span <?=$stars < 4 ? 'class="star-disabled"':'' ?>></span>
-                        <span <?=$stars < 5 ? 'class="star-disabled"':'' ?>></span>
+                        <?= StarsWidget::widget(['stars' => $stars]) ?>
                         <b><?= $stars ?></b>
                         <p class="user__search-content">
                             <?= Html::encode($user->information)?>
