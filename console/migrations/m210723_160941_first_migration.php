@@ -13,9 +13,9 @@ class m210723_160941_firstmigration extends Migration
      */
     public function safeUp()
     {
-        $data = ['data/schema.sql',
-            'data/categories.sql',
-            'data/locations.sql'];
+        $data = ['console/migrations/data/schema.sql',
+            'console/migrations/data/categories.sql',
+            'console/migrations/data/locations.sql'];
 
         foreach ($data as $file) {
             $sql = file_get_contents($file);
