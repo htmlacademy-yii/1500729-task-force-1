@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "users".
@@ -35,15 +36,17 @@ use Yii;
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Responds[] $responds
- * @property Tasks[] $tasks
- * @property Tasks[] $tasks0
+ * @property Tasks[] $ownTasks
+ * @property Tasks[] $executeTasks
  * @property Locations $location
  * @property Files $avatar
  * @property WorkPhotos[] $workPhotos
  */
 class Users extends \yii\db\ActiveRecord
 {
-    /**
+    const ROLE_EXECUTOR = 1;
+    const ROLE_AUTHOR = 0;
+        /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -104,7 +107,7 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[ExecutorCategories]].
+     * Gets query for [[ExecutorCategoriesFixture]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -144,21 +147,21 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Tasks]].
+     * Gets query for [[OwnTasks]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks()
+    public function getOwnTasks()
     {
         return $this->hasMany(Tasks::class, ['author_id' => 'id']);
     }
 
     /**
-     * Gets query for [[Tasks0]].
+     * Gets query for [[ExecuteTasks]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks0()
+    public function getExecuteTasks()
     {
         return $this->hasMany(Tasks::class, ['executor_id' => 'id']);
     }
@@ -180,6 +183,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getAvatar()
     {
+
         return $this->hasOne(Files::class, ['id' => 'avatar_id']);
     }
 
@@ -191,5 +195,17 @@ class Users extends \yii\db\ActiveRecord
     public function getWorkPhotos()
     {
         return $this->hasMany(WorkPhotos::class, ['user_id' => 'id']);
+    }
+    public function calculateStars ($id) {
+        $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
+        $query = new Query();
+        $query->select(['AVG(ratio)'])->from('reviews')->
+        where(['task_id' => $userTasksQuery]);
+        $stars = $query->one();
+        if ($stars['AVG(ratio)']) {
+            return $stars['AVG(ratio)'];
+        } else {
+            return 0;
+        }
     }
 }

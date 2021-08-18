@@ -49,7 +49,7 @@ class Categories extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[ExecutorCategories]].
+     * Gets query for [[ExecutorCategoriesFixture]].
      *
      * @return \yii\db\ActiveQuery
      */

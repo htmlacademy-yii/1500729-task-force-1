@@ -13,12 +13,18 @@ class TestModelsController extends Controller
 {
     public function actionIndex()
     {
-        $users = Users::find()->
-                        select('name, phone')->
-                        joinWith('location l')->
-                        where('l.id=87')->one();
+        $users = Users::find()->joinWith(['location l'])->
+        select('name, location_id')->limit(5)->all();
+
         foreach ($users as $user) {
-            print($user);
+            $locations = $user->location->location;
+            echo '<pre>';
+            print_r($locations);
+            echo '</pre>';
+            echo '<pre>';
+            print_r($user);
+            echo '</pre>';
+
         }
 
     }
