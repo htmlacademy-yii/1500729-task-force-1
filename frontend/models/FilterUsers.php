@@ -41,13 +41,7 @@ class FilterUsers extends Model
 
     public function filterCategories()
     {
-        if ($this->category_id) {
-            $id = [];
-            foreach ($this->category_id as $value) {
-                $id[] = $value;
-            }
-            return (['IN', 'executor_categories.category_id', $id]);
-        }
+            return (['IN', 'executor_categories.category_id', $this->category_id]);
     }
 
     public function getOnlineUsers()
@@ -80,6 +74,7 @@ class FilterUsers extends Model
         $null = new Expression('NULL');
         return ['IS', 'executor_id', $null];
     }
+
 }
 
 
