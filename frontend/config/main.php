@@ -37,14 +37,15 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'users' => 'users/index',
+                'users/filter/<FilterUsers:\d+>' => 'users/index'
             ],
         ],
-        */
+
     ],
     'params' => $params,
 ];

@@ -41,6 +41,8 @@ use yii\db\Query;
  * @property Locations $location
  * @property Files $avatar
  * @property WorkPhotos[] $workPhotos
+ * @property Favourites[] $ownFavourites
+ * @property Favourites[] $executeFavourites
  */
 class Users extends \yii\db\ActiveRecord
 {
@@ -196,6 +198,7 @@ class Users extends \yii\db\ActiveRecord
     {
         return $this->hasMany(WorkPhotos::class, ['user_id' => 'id']);
     }
+
     public function calculateStars ($id) {
         $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
         $query = new Query();
@@ -207,5 +210,25 @@ class Users extends \yii\db\ActiveRecord
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Gets query for [[Favourites]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOwnFavourites()
+    {
+        return $this->hasMany(Favourites::class, ['author_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Favourites0]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getExecuteFavourites()
+    {
+        return $this->hasMany(Favourites::class, ['executor_id' => 'id']);
     }
 }
