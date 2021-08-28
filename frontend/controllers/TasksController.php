@@ -5,10 +5,12 @@ namespace frontend\controllers;
 use frontend\models\Categories;
 use frontend\models\FilterTasks;
 use frontend\models\FilterUsers;
+use frontend\models\Responds;
 use frontend\models\Tasks;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller as ControllerAlias;
+use yii\web\NotFoundHttpException;
 
 
 class TasksController extends ControllerAlias
@@ -48,6 +50,18 @@ class TasksController extends ControllerAlias
 
         $tasks = $tasks->all();
         return $this->render('tasks', ['tasks' => $tasks, 'model' => $model, 'categories' => $categories]);
+    }
+
+    public function actionView($id) {
+        $task = Tasks::find()->where(['id' => $id])->with('category')
+            ->with('taskFiles')->with('location')->with('author')->one();
+        if (!$task) {
+            throw new NotFoundHttpException("Задание с ID $id не найдено");
+        }
+        $responds = Responds::find()->where(['task_id' => $id])->with('executor')->all();
+        $countAuthorTasks = count(Tasks::find()->where(['author_id' => $task->author_id])->all());
+
+        return $this->render('view', ['task' => $task, 'responds' => $responds, 'countAuthorTasks' => $countAuthorTasks]);
     }
 
 }

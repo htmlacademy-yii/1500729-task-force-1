@@ -10,6 +10,7 @@ use frontend\models\Users;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 
 class UsersController extends \yii\web\Controller
 {
@@ -52,5 +53,19 @@ class UsersController extends \yii\web\Controller
         $users = $this->users->all();
 
         return $this->render('index', ['users' => $users, 'model' => $model, 'categories' => $categories]);
+    }
+
+    public function actionView($id) {
+        $user = Users::find()->where(['users.id' =>$id])->joinWith('location')
+            ->joinWith('executeTasks')->with('executorCategories.category')
+            ->with('workPhotos.files')->one();
+        $reviews = Reviews::find()->joinWith('task.author')
+            ->where(['executor_id' => $id])->all();
+
+        if(!$user) {
+            throw new NotFoundHttpException("Контакт с ID $id не найден");
+        }
+
+        return $this->render('view', ['user' => $user, 'reviews' => $reviews]);
     }
 }

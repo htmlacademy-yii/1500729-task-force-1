@@ -42,7 +42,9 @@ return [
             'showScriptName' => false,
             'rules' => [
                 'users' => 'users/index',
-                'users/filter/<FilterUsers:\d+>' => 'users/index'
+                'tasks' => 'tasks/index',
+                'user/view/<id:\d+>' => 'users/view',
+                'task/view/<id:\d+>' => 'tasks/view'
             ],
         ],
 
