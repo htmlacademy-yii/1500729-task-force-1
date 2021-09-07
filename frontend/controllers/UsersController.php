@@ -63,7 +63,7 @@ class UsersController extends \yii\web\Controller
             ->where(['executor_id' => $id])->all();
 
         if(!$user) {
-            throw new NotFoundHttpException("Контакт с ID $id не найден");
+            throw new NotFoundHttpException("Контакт с ID {$id} не найден");
         }
 
         return $this->render('view', ['user' => $user, 'reviews' => $reviews]);
