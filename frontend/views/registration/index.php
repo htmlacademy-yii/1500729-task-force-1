@@ -17,17 +17,29 @@ use kartik\select2\Select2;
             <div class="registration-wrapper">
                 <?php $form = ActiveForm::begin([
                     'method' => 'post',
-                    'options' => ['class' => 'registration__user-form form-create']
+                    'options' => ['class' => 'registration__user-form form-create'],
+                     'validateOnSubmit' => true,
+                'fieldConfig' => [
+                    'template' => "{label}\n{input}\n{error}",
+                    'inputOptions' => [
+                        'class' => 'input textarea',
+                        'style' => 'width: 100%;',
+                    ],
+                    'errorOptions' => ['tag' => 'span',
+                        'style' => 'color: red',
+                        'class' => 'registration__text-error'
+                    ],
+                    'labelOptions' => ['class' => null],
+                ]
             ]) ?>
-                <div class="field-container field-container--registration">
-                    <?= $form->field($model, 'email')->textInput(['class' => 'input textarea', 'placeholder' => 'kumarm@mail.ru'])
+
+                    <?= $form->field($model, 'email', ['options' => ['class' => 'field-container field-container--registration']])->textInput(['placeholder' => 'kumarm@mail.ru'])
                         ->label('Электронная почта') ?>
-                </div>
-                <div class="field-container field-container--registration">
+
+
                     <?= $form->field($model, 'name')->textInput(['class' => 'input textarea', 'placeholder' => 'Мамедов Кумар'])
                         ->label('Ваше имя') ?>
-                </div>
-                <div class="field-container field-container--registration">
+
                     <?= $form->field($model, 'location')
                     ->widget(Select2::class, [
                         'data' => $model->getLocations(),
@@ -36,12 +48,11 @@ use kartik\select2\Select2;
                             'class' => 'multiple-select input town-select registration-town'
                         ]
                     ])->label('Город проживания')?>
-                </div>
-                <div class="field-container field-container--registration">
+
                     <?= $form->field($model, 'password')
                         ->textInput(['class' => 'input textarea', 'type' => 'password'])
                         ->label('Пароль')->error(['class' => "registration__text-error"]) ?>
-                </div>
+
                 <?= Html::submitButton('Cоздать аккаунт', ['class' => 'button button__registration']) ?>
                 <?php ActiveForm::end() ?>
             </div>

@@ -17,11 +17,9 @@ class RegistrationController extends Controller
              $model = new Registration();
              $model->load(Yii::$app->request->post());
              if ($model->validate()) {
+                 $model->signUp();
                  $this->goHome();
              }
-
-
-
          return $this->render('index', ['model' => $model]);
      }
 }
