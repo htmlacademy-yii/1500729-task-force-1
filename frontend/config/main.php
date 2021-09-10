@@ -41,8 +41,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'users' => 'users/index',
-                'tasks' => 'tasks/index',
+                'user' => 'users/index',
+                'task' => 'tasks/index',
                 'user/view/<id:\d+>' => 'users/view',
                 'task/view/<id:\d+>' => 'tasks/view'
             ],

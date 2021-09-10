@@ -6,6 +6,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
@@ -82,11 +83,11 @@ AppAsset::register($this);
             </div>
             <div class="header__nav">
                 <ul class="header-nav__list site-list">
-                    <li class="site-list__item site-list__item--active">
-                        <a href="#">Задания</a>
+                    <li class="site-list__item <?php ?>">
+                        <?= Html::a('Задания', ['tasks/index'])?>
                     </li>
                     <li class="site-list__item">
-                        <a href="users.html">Исполнители</a>
+                        <?= Html::a('Исполнители', ['users/index'])?>
                     </li>
                     <li class="site-list__item">
                         <a href="create.html">Создать задание</a>

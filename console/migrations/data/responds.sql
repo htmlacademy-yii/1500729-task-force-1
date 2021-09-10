@@ -48,4 +48,4 @@ Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quis
 
 In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.", "4", "3");INSERT INTO responds(dt_add, budget, content, task_id, executor_id) VALUES ("2019-02-13", "4", "Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.
 
-Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.", "4", "4");INSERT INTO responds(dt_add, budget, content, task_id, executor_id) VALUES ("");
+Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.", "4", "4");
