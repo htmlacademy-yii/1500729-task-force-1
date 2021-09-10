@@ -58,10 +58,8 @@ class TasksController extends ControllerAlias
         if (!$task) {
             throw new NotFoundHttpException("Задание с ID {$id} не найдено");
         }
-        $responds = $task->responds;
-        $countAuthorTasks = Tasks::find()->where(['author_id' => $task->author_id])->count();
 
-        return $this->render('view', ['task' => $task, 'responds' => $responds, 'countAuthorTasks' => $countAuthorTasks]);
+        return $this->render('view', ['task' => $task]);
     }
 
 }

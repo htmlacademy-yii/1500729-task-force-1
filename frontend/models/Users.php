@@ -231,4 +231,8 @@ class Users extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Favourites::class, ['executor_id' => 'id']);
     }
+
+    public function getAuthorCountTasks() {
+         return $this->hasMany(Tasks::class, ['author_id' => 'id'])->count();
+    }
 }
