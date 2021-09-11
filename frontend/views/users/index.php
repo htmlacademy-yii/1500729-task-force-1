@@ -22,7 +22,7 @@ $this->title = 'Задания';
             <div class="content-view__feedback-card user__search-wrapper">
                 <div class="feedback-card__top">
                     <div class="user__search-icon">
-                        <a href="user.html"><img src="./img/man-glasses.jpg" width="65" height="65"></a>
+                        <a href="user.html"><img src="/img/man-glasses.jpg" width="65" height="65"></a>
                         <span><?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
                                                         count($user->executeTasks)) ?></span>
                         <?php foreach ($user->executeTasks as $task) {
@@ -32,7 +32,7 @@ $this->title = 'Задания';
                                                         $count) ?> </span>
                     </div>
                     <div class="feedback-card__top--name user__search-card">
-                        <p class="link-name"><a href="user.html" class="link-regular"><?= Html::encode($user->name) ?></a></p>
+                        <p class="link-name"><?= Html::a($user->name, ['users/view', 'id' => $user->id], ['class' => 'link-regular']) ?></p>
                         <?= StarsWidget::widget(['stars' => $stars]) ?>
                         <b><?= $stars ?></b>
                         <p class="user__search-content">

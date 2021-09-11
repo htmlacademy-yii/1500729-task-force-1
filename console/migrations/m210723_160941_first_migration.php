@@ -4,9 +4,9 @@ use frontend\models\Users;
 use yii\db\Migration;
 
 /**
- * Class m210723_160941_firstmigration
+ * Class m210723_160941_first_migration
  */
-class m210723_160941_firstmigration extends Migration
+class m210723_160941_first_migration extends Migration
 {
     /**
      * {@inheritdoc}

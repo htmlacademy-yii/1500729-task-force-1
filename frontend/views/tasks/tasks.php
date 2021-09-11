@@ -20,7 +20,7 @@ $this->title = 'Задания';
                 <?php foreach ($tasks as $task): ?>
                     <div class="new-task__card">
                         <div class="new-task__title">
-                            <a href="view.html" class="link-regular"><h2><?= Html::encode($task->title) ?></h2></a>
+                            <?= Html::a('<h2>' . Html::encode($task->title) . '</h2>', ['tasks/view', 'id' => $task->id], ['class' => 'link-regular'])?>
                             <?= Html::a('<p>'. $task->category->title . '</p>',['tasks/index', 'category_id' => $task->category->id], ['class' => 'new-task__type link-regular'] )?>
 
                         </div>

@@ -20,4 +20,4 @@ Sed ante. Vivamus tortor. Duis mattis egestas metus.");INSERT INTO reviews(dt_ad
 
 Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.");INSERT INTO reviews(dt_add, ratio, content) VALUES ("2018-10-27", "2", "Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.
 
-Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.");INSERT INTO reviews(dt_add, ratio, content) VALUES ("2019-06-14", "4", "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin risus. Praesent lectus.");INSERT INTO reviews(dt_add, ratio, content) VALUES ("");
+Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.");INSERT INTO reviews(dt_add, ratio, content) VALUES ("2019-06-14", "4", "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin risus. Praesent lectus.");

@@ -199,7 +199,7 @@ class Users extends \yii\db\ActiveRecord
         return $this->hasMany(WorkPhotos::class, ['user_id' => 'id']);
     }
 
-    public function calculateStars ($id) {
+    public static function calculateStars ($id) {
         $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
         $query = new Query();
         $query->select(['AVG(ratio)'])->from('reviews')->
@@ -230,5 +230,9 @@ class Users extends \yii\db\ActiveRecord
     public function getExecuteFavourites()
     {
         return $this->hasMany(Favourites::class, ['executor_id' => 'id']);
+    }
+
+    public function getAuthorCountTasks() {
+         return $this->hasMany(Tasks::class, ['author_id' => 'id'])->count();
     }
 }
