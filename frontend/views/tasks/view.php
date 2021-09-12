@@ -67,11 +67,11 @@ use taskforce\helpers\PluralHelper;
                     </button>
                 </div>
             </div>
-            <?php if ($responds): ?>
+            <?php if ($task->responds): ?>
             <div class="content-view__feedback">
-                <h2>Отклики <span>(<?= count($responds) ?>)</span></h2>
+                <h2>Отклики <span>(<?= count($task->responds) ?>)</span></h2>
                 <div class="content-view__feedback-wrapper">
-                    <?php foreach ($responds as $respond): ?>
+                    <?php foreach ($task->responds as $respond): ?>
                     <div class="content-view__feedback-card">
                         <div class="feedback-card__top">
                             <a href="user.html"><img src="/img/man-glasses.jpg" width="55" height="55"></a>
@@ -116,7 +116,7 @@ use taskforce\helpers\PluralHelper;
                     </div>
                     <p class="info-customer"><span>
                              <?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
-                                $countAuthorTasks) ?>
+                                $task->author->AuthorCountTasks) ?>
                         </span><span class="last-">
                             <?= mb_substr(Yii::$app->formatter->asRelativeTime($task->author->dt_add), 0, -6, 'UTF-8') ?> на сайте
                         </span></p>
