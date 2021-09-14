@@ -147,7 +147,7 @@ AppAsset::register($this);
                 </ul>
             </div>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
     </header>
 
 
