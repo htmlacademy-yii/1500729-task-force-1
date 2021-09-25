@@ -125,12 +125,12 @@ AppAsset::register($this);
             </div>
             <div class="header__account">
                 <a class="header__account-photo">
-                    <img src="./img/user-photo.png"
+                    <img src="/img/user-photo.png"
                          width="43" height="44"
                          alt="Аватар пользователя">
                 </a>
                 <span class="header__account-name">
-                 Василий
+                 <?= Yii::$app->user->getIdentity()->name ?>
              </span>
             </div>
             <div class="account__pop-up">
@@ -142,7 +142,7 @@ AppAsset::register($this);
                         <a href="account.html">Настройки</a>
                     </li>
                     <li>
-                        <a href="landing.html">Выход</a>
+                        <?= Html::a('Выход', ['site/logout'])?>
                     </li>
                 </ul>
             </div>

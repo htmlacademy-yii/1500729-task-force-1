@@ -7,6 +7,7 @@ namespace frontend\models;
 use yii\base\Model;
 use frontend\models\Users;
 use yii\helpers\ArrayHelper;
+use yii\web\IdentityInterface;
 
 class Registration extends Model
 {
@@ -46,4 +47,5 @@ class Registration extends Model
 
          return $user->save();
      }
+
 }

@@ -13,7 +13,7 @@ use yii\web\Controller as ControllerAlias;
 use yii\web\NotFoundHttpException;
 
 
-class TasksController extends ControllerAlias
+class TasksController extends SecuredController
 {
     public function actionIndex()
     {

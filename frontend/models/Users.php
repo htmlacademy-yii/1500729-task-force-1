@@ -4,6 +4,7 @@ namespace frontend\models;
 
 use Yii;
 use yii\db\Query;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "users".
@@ -44,7 +45,7 @@ use yii\db\Query;
  * @property Favourites[] $ownFavourites
  * @property Favourites[] $executeFavourites
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends \yii\db\ActiveRecord implements IdentityInterface
 {
     const ROLE_EXECUTOR = 1;
     const ROLE_AUTHOR = 0;
@@ -234,5 +235,34 @@ class Users extends \yii\db\ActiveRecord
 
     public function getAuthorCountTasks() {
          return $this->hasMany(Tasks::class, ['author_id' => 'id'])->count();
+    }
+
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
+    }
+    public function validatePassword($password)
+    {
+        return \Yii::$app->security->validatePassword($password, $this->password);
     }
 }

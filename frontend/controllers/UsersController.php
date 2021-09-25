@@ -12,7 +12,7 @@ use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
-class UsersController extends \yii\web\Controller
+class UsersController extends SecuredController
 {
     public function actionIndex()
     {
