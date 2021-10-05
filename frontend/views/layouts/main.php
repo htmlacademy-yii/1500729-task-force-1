@@ -215,7 +215,11 @@ AppAsset::register($this);
     </footer>
 
 </div>
+
 <?php $this->endBody() ?>
+<script>
+    var dropzone = new Dropzone("div.create__file", {url:"/tasks/upload", paramName: "files"});
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>

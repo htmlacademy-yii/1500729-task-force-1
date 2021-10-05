@@ -35,11 +35,15 @@ use taskforce\helpers\PluralHelper;
                             <?= Html::encode($task->description) ?>
                         </p>
                     </div>
+                    <?php if ($task->taskFiles): ?>
                     <div class="content-view__attach">
+
                         <h3 class="content-view__h3">Вложения</h3>
-                        <a href="#">my_picture.jpeg</a>
-                        <a href="#">agreement.docx</a>
+                        <?php foreach ($task->taskFiles as $file): ?>
+                        <?= Html::a(Html::encode($file->file->name),[$file->file->path])?>
+                        <?php endforeach; ?>
                     </div>
+                    <? endif; ?>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
