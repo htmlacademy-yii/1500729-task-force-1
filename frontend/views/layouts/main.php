@@ -90,7 +90,7 @@ AppAsset::register($this);
                         <?= Html::a('Исполнители', ['users/index'])?>
                     </li>
                     <li class="site-list__item">
-                        <a href="create.html">Создать задание</a>
+                        <?= Html::a('Создать задание', ['tasks/create'])?>
                     </li>
                     <li class="site-list__item">
                         <a href="account.html">Мой профиль</a>
