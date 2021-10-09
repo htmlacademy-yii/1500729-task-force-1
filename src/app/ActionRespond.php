@@ -7,10 +7,10 @@ namespace taskforce\app;
 class ActionRespond extends AbstractTaskAction
 {
 
-    protected string $actionName = 'Взять в работу';
-    protected string $action = 'action_respond';
+    protected string $actionName = 'Откликнуться';
+    protected string $action = 'response';
 
-    public function canUse(int $executorId, int $userId, int $authorId, string $status): bool
+    public function canUse(?int $executorId, int $userId, int $authorId, int $status): bool
     {
         if ($userId !== $executorId && $userId !== $authorId && $status === task::STATUS_NEW) {
             return true;

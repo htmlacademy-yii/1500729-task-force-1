@@ -9,14 +9,14 @@ use taskforce\exceptions\StatusException;
 class Task
 {
 
-    const STATUS_NEW = 'new';
-    const STATUS_CANCEL = 'cancel';
-    const STATUS_IN_WORK = 'in_work';
-    const STATUS_DONE = 'done';
-    const STATUS_FAILED = 'failed';
+    const STATUS_NEW = 0;
+    const STATUS_CANCEL = 1;
+    const STATUS_IN_WORK = 2;
+    const STATUS_DONE = 3;
+    const STATUS_FAILED = 4;
 
     public int $authorId;
-    public int $executorId;
+    public ?int $executorId;
 
     public ?string $status;
 
@@ -49,9 +49,9 @@ class Task
     /**
      * TaskClass constructor.
      * @param int $authorId - ID заказчика
-     * @param int $executorId - ID исполнителя
+     * @param ?int $executorId - ID исполнителя
      */
-    public function __construct(int $authorId, int $executorId)
+    public function __construct(int $authorId, ?int $executorId )
     {
         $this->actionCancel = new ActionCancel();
         $this->actionChoose = new ActionChoose();
@@ -93,26 +93,24 @@ class Task
 
     /**
      * Возвращает доступные действия для указанного статуса и пользователя
-     * @param string $status - статус задачи
-     * @param int $userId - ID пользователя
+     * @param int $status - статус задачи
+     * @param ?int $userId - ID пользователя
      * @return array возвращает массив с доступными действиями
      * @throws statusException - указано несуществующий статус
      */
-    public function getActiveActions(string $status, int $userId): array
+    public function getActiveActions(int $status, int $userId): array
     {
         if (!array_key_exists($status, $this->getTaskMap())) {
             throw new StatusException("Такого статуса не существует");
         }
          $activeActions = [];
                 if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = $this->actionCancel->getAction();
+                    $activeActions[] = [ $this->actionCancel->getAction() => $this->actionCancel->getActionName() ];
                 }
                 if ($this->actionRespond->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = $this->actionRespond->getAction();
+                    $activeActions[] = [ $this->actionRespond->getAction() => $this->actionRespond->getActionName()];
                 }
-                if ($this->actionChoose->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = $this->actionChoose->getAction();
-                }
+
                 if ($this->actionDone->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = $this->actionDone->getAction();
                 }

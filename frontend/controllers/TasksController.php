@@ -12,7 +12,9 @@ use frontend\models\TaskFiles;
 use frontend\models\Tasks;
 use frontend\models\Users;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
+use taskforce\app\Task;
 use Yii;
+use yii\base\Event;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
@@ -26,7 +28,7 @@ class TasksController extends SecuredController
 {
     public function behaviors()
     {
-        $rules =  parent::behaviors();
+        $rules = parent::behaviors();
         $rule = [
             'allow' => false,
             'actions' => ['create'],
@@ -36,7 +38,7 @@ class TasksController extends SecuredController
             'denyCallback' => function ($rules, $action) {
                 throw new BadRequestHttpException('Нет доступа');
             }
-         ];
+        ];
         array_unshift($rules['access']['rules'], $rule);
 
         return $rules;
@@ -53,6 +55,7 @@ class TasksController extends SecuredController
 
     public function actionIndex()
     {
+
 
         $get = Yii::$app->request->get();
         $model = new FilterTasks();
@@ -74,10 +77,10 @@ class TasksController extends SecuredController
                 $tasks = $tasks->andFilterWhere(['LIKE', 'title', $model->search]);
             }
 
-            if ($model->options && ArrayHelper::isIn(1,$model->options)) {
+            if ($model->options && ArrayHelper::isIn(1, $model->options)) {
                 $tasks = $tasks->andFilterWhere($model->getTasksWithoutResponds());
             }
-            if ($model->options && ArrayHelper::isIn(2,$model->options)) {
+            if ($model->options && ArrayHelper::isIn(2, $model->options)) {
                 $tasks = $tasks->andFilterWhere($model->getRemoteTasks());
             }
             if ($model->period) {
@@ -89,14 +92,32 @@ class TasksController extends SecuredController
         return $this->render('tasks', ['tasks' => $tasks, 'model' => $model, 'categories' => $categories]);
     }
 
-    public function actionView($id) {
+    public function actionView($id)
+    {
+        $user_id = Yii::$app->user->identity->getId();
+
         $task = Tasks::find()->where(['id' => $id])->with('category')
             ->with('taskFiles.file')->with('location')->with('author')->one();
         if (!$task) {
             throw new NotFoundHttpException("Задание с ID {$id} не найдено");
         }
 
-        return $this->render('view', ['task' => $task]);
+        $_task = new Task($task->author_id, $task->executor_id);
+        $actions = $_task->getActiveActions($task->status, Yii::$app->user->identity->getId());
+        $respondAuthor = Responds::find()->where(['task_id' => $task->id])->andWhere(['executor_id' => Yii::$app->user->identity->getId()])->one();
+        if (!$respondAuthor) {
+            $model = new Responds();
+            $model->task_id = $id;
+            $model->executor_id = Yii::$app->user->identity->getId();
+            if (Yii::$app->request->post()) {
+                $model->load(Yii::$app->request->post());
+                if ($model->validate()) {
+                    $model->save();
+                }
+                return $this->redirect(['tasks/view', 'id' => $id]);
+            }
+        }
+        return $this->render('view', ['task' => $task, 'model' => $model, '_task' => $_task, 'respondAuthor' => $respondAuthor, 'user_id' => $user_id]);
     }
 
     public function actionCreate()
@@ -149,4 +170,15 @@ class TasksController extends SecuredController
             Yii::$app->session->set('files', $f);
         }
     }
+        public function actionChoose($taskId, $executorId) {
+            $task = Tasks::findOne($taskId);
+            $task->status = Task::STATUS_IN_WORK;
+            $task->executor_id = $executorId;
+            $task->save();
+            return $this->goHome();
+        }
+
+        public function actionDecline($taskId, $executorId) {
+
+        }
 }

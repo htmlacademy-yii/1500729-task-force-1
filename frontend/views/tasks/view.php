@@ -2,6 +2,8 @@
 /* @var $this yii\web\View */
 /* @var $task \frontend\models\Tasks */
 /* @var $responds \frontend\models\Responds */
+/* @var $respondAuthor \frontend\models\Responds */
+/* @var $_task \taskforce\app\Task */
 /** @var int $countAuthorTasks */
 use frontend\models\Users;
 use taskforce\app\RatioWidget;
@@ -9,6 +11,7 @@ use taskforce\app\StarsWidget;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use taskforce\helpers\PluralHelper;
+use yii\widgets\ActiveForm;
 
 
 ?>
@@ -59,23 +62,23 @@ use taskforce\helpers\PluralHelper;
                         </div>
                     </div>
                 </div>
+                <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
                 <div class="content-view__action-buttons">
-                    <button class=" button button__big-color response-button open-modal"
-                            type="button" data-for="response-form">Откликнуться
+                    <?php foreach ($_task->getActiveActions($task->status, $user_id) as $action): ?>
+                    <button class=" button button__big-color <?= array_key_first($action)?>-button open-modal"
+                            type="button" data-for="<?= array_key_first($action) ?>-form"><?= array_shift($action)?>
                     </button>
-                    <button class="button button__big-color refusal-button open-modal"
-                            type="button" data-for="refuse-form">Отказаться
-                    </button>
-                    <button class="button button__big-color request-button open-modal"
-                            type="button" data-for="complete-form">Завершить
-                    </button>
+                    <?php endforeach;?>
+
                 </div>
+                <?php endif; ?>
             </div>
-            <?php if ($task->responds): ?>
+            <?php if ($task->responds && $task->author_id === $user_id || $respondAuthor->executor_id === $user_id): ?>
             <div class="content-view__feedback">
                 <h2>Отклики <span>(<?= count($task->responds) ?>)</span></h2>
                 <div class="content-view__feedback-wrapper">
                     <?php foreach ($task->responds as $respond): ?>
+                    <?php if($respond->executor_id === $user_id || $task->author_id === $user_id): ?>
                     <div class="content-view__feedback-card">
                         <div class="feedback-card__top">
                             <a href="user.html"><img src="/img/man-glasses.jpg" width="55" height="55"></a>
@@ -96,13 +99,17 @@ use taskforce\helpers\PluralHelper;
                             </p>
                             <span><?= Html::encode($respond->budget) ?> ₽</span>
                         </div>
+                        <?php if ($task->author_id == $user_id && $task->status == $_task::STATUS_NEW): ?>
                         <div class="feedback-card__actions">
-                            <a class="button__small-color response-button button"
-                               type="button">Подтвердить</a>
+                            <?= Html::a('Подтвердить',
+                                       ['tasks/choose', 'taskId' => $task->id, 'executorId' => $respond->executor_id],
+                                       ['class' => "button__small-color response-button button", 'type' => "button"]) ?>
                             <a class="button__small-color refusal-button button"
                                type="button">Отказать</a>
                         </div>
+                        <?php endif; ?>
                     </div>
+                    <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -136,19 +143,28 @@ use taskforce\helpers\PluralHelper;
 </main>
 <section class="modal response-form form-modal" id="response-form">
     <h2>Отклик на задание</h2>
-    <form action="#" method="post">
-        <p>
-            <label class="form-modal-description" for="response-payment">Ваша цена</label>
-            <input class="response-form-payment input input-middle input-money" type="text" name="response-payment"
-                   id="response-payment">
-        </p>
-        <p>
-            <label class="form-modal-description" for="response-comment">Комментарий</label>
-            <textarea class="input textarea" rows="4" id="response-comment" name="response-comment"
-                      placeholder="Place your text"></textarea>
-        </p>
-        <button class="button modal-button" type="submit">Отправить</button>
-    </form>
+    <?php if (!$respondAuthor): ?>
+    <?php $form = ActiveForm::begin([
+        'method' => 'post',
+        'action' => ['tasks/view', 'id' => $task->id],
+        'fieldConfig' => [
+            'template' => "<p>{label}{input}\n{error}</p>"
+        ]
+    ])
+    ?>
+    <?= $form->field($model, 'budget')
+        ->textInput(['class' => 'response-form-payment input input-middle input-money', 'style' => 'width: 200px;'])
+        ->label('Ваша цена',['class' => 'form-modal-description'])
+    ?>
+    <?= $form->field($model, 'content')
+        ->textarea(['class' => 'input textarea', 'rows' => 4, 'placeholder' => 'Place your text'])
+        ->label('Комментарий', ['class' => 'form-modal-description'])
+    ?>
+    <?= Html::submitButton('Отправить', ['class' => 'button modal-button']) ?>
+    <?php ActiveForm::end() ?>
+    <?php else: ?>
+    <p>Вы уже откликались на это задание</p>
+    <?php endif; ?>
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>
 <section class="modal completion-form form-modal" id="complete-form">
