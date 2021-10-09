@@ -43,19 +43,23 @@ use taskforce\helpers\PluralHelper;
                         <?= Html::a(Html::encode($file->file->name),[$file->file->path])?>
                         <?php endforeach; ?>
                     </div>
-                    <? endif; ?>
+                    <?php endif; ?>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
                             <div class="content-view__map">
                                 <a href="#"><img src="/img/map.jpg" width="361" height="292"
+                                                 <?php if ($task->location): ?>
                                                  alt="<?= $task->location->location ?>, <?= Html::encode($task->address) ?>"></a>
+                                                 <?php endif; ?>
                             </div>
+                            <?php if ($task->location): ?>
                             <div class="content-view__address">
                                 <span class="address__town"><?= $task->location->location ?></span><br>
                                 <span><?= Html::encode($task->address) ?></span>
                                 <p>Вход под арку, код домофона 1122</p>
                             </div>
+                            <?endif; ?>
                         </div>
                     </div>
                 </div>

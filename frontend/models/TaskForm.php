@@ -6,7 +6,7 @@ namespace frontend\models;
 
 use yii\base\Model;
 
-class NewTask extends Model {
+class TaskForm extends Model {
     public $title;
     public $description;
     public $category_id;
