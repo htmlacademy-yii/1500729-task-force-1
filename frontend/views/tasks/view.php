@@ -59,7 +59,7 @@ use taskforce\helpers\PluralHelper;
                                 <span><?= Html::encode($task->address) ?></span>
                                 <p>Вход под арку, код домофона 1122</p>
                             </div>
-                            <?endif; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

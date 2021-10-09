@@ -26,21 +26,22 @@ class TasksController extends SecuredController
 {
     public function behaviors()
     {
-        $rules =  parent::behaviors();
+        $rules = parent::behaviors();
         $rule = [
             'allow' => false,
             'actions' => ['create'],
             'matchCallback' => function ($rules, $action) {
-                if (!Yii::$app->user->isGuest) {
-                    return Yii::$app->user->identity->role != Users::ROLE_AUTHOR;
-                } else {
+                if (Yii::$app->user->isGuest) {
                     return false;
                 }
-                },
+
+                return Yii::$app->user->identity->role != Users::ROLE_AUTHOR;
+
+            },
             'denyCallback' => function ($rules, $action) {
                 throw new BadRequestHttpException('Нет доступа');
             }
-         ];
+        ];
         array_unshift($rules['access']['rules'], $rule);
 
         return $rules;
@@ -78,10 +79,10 @@ class TasksController extends SecuredController
                 $tasks = $tasks->andFilterWhere(['LIKE', 'title', $model->search]);
             }
 
-            if ($model->options && ArrayHelper::isIn(1,$model->options)) {
+            if ($model->options && ArrayHelper::isIn(1, $model->options)) {
                 $tasks = $tasks->andFilterWhere($model->getTasksWithoutResponds());
             }
-            if ($model->options && ArrayHelper::isIn(2,$model->options)) {
+            if ($model->options && ArrayHelper::isIn(2, $model->options)) {
                 $tasks = $tasks->andFilterWhere($model->getRemoteTasks());
             }
             if ($model->period) {
@@ -93,7 +94,8 @@ class TasksController extends SecuredController
         return $this->render('tasks', ['tasks' => $tasks, 'model' => $model, 'categories' => $categories]);
     }
 
-    public function actionView($id) {
+    public function actionView($id)
+    {
         $task = Tasks::find()->where(['id' => $id])->with('category')
             ->with('taskFiles.file')->with('location')->with('author')->one();
         if (!$task) {
