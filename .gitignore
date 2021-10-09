@@ -9,3 +9,4 @@ Thumbs.db
 /vendor/
 *.lock
 .phpunit.result.cache
+/frontend/web/uploads/*.*

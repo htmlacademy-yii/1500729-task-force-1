@@ -46,7 +46,8 @@ return [
                 'task' => 'tasks/index',
                 'user/view/<id:\d+>' => 'users/view',
                 'task/view/<id:\d+>' => 'tasks/view',
-                '' => 'site/index'
+                '' => 'site/index',
+                'task/new' => 'tasks/create'
             ],
         ],
 
