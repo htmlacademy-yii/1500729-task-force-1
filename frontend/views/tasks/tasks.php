@@ -28,10 +28,14 @@ $this->title = 'Задания';
                         <p class="new-task_description">
                             <?= Html::encode($task->description) ?>
                         </p>
+                        <?php if ($task->budget): ?>
                         <b class="new-task__price new-task__price--translation"><?= Html::encode($task->budget) ?><b>
                                 ₽</b></b>
+                        <?php endif; ?>
+                        <?php if($task->location): ?>
                         <p class="new-task__place"><?= Html::encode($task->location->location) ?>
                             , <?= Html::encode($task->address) ?></p>
+                        <?php endif; ?>
                         <span
                             class="new-task__time"><?= Yii::$app->formatter->format($task->dt_add, 'relativeTime') ?></span>
                     </div>

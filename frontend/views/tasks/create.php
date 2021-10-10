@@ -1,12 +1,11 @@
 <?php
 /* @var $this yii\web\View */
-/* @var $model \frontend\models\Registration */
+/* @var $taskForm \frontend\models\Registration */
 /* @var $categories \frontend\models\Categories */
 
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 ?>
 
@@ -36,13 +35,13 @@ use yii\widgets\ActiveForm;
                   ] ]
 ]) ?>
             <div class="field-container">
-                <?= $form->field($model,'title')->
+                <?= $form->field($taskForm,'title')->
                 textInput(['class' => 'input textarea','placeholder' => "Повесить полку"])->
                 label('Мне нужно')->hint('Кратко опишите суть работы') ?>
             </div>
 
             <div class="field-container">
-                <?= $form->field($model, 'description')
+                <?= $form->field($taskForm, 'description')
                     ->textarea(['class' => 'input textarea', 'rows' => 7, 'placeholder' => "Введите Ваш текст"])
                     ->label('Подробности задания')
                     ->hint('Укажите все пожелания и детали, чтобы исполнителям было проще соориентироваться')
@@ -51,14 +50,14 @@ use yii\widgets\ActiveForm;
 
             <div class="field-container">
 
-                <?= $form->field($model, 'category_id')
+                <?= $form->field($taskForm, 'category_id')
                     ->dropDownList(ArrayHelper::map($categories, 'id', 'title'),
                         ['class' => 'multiple-select input multiple-select-big'])
                         ->label('Категория')->hint('Выберите категорию')
                 ?>
             </div>
 
-            <?= $form->field($model, 'files', [ 'options' => ['tag' => false]
+            <?= $form->field($taskForm, 'files', [ 'options' => ['tag' => false]
                 , 'template' => "{label}\n<span>{hint}</span>\n<div class='create__file dz-clickable'>{input}\n<span>Добавить новый файл</span>\n{error}\n</div>"
                 , 'inputOptions' => [ 'style' => "display:none"]
             ])
@@ -74,7 +73,7 @@ use yii\widgets\ActiveForm;
 
             <div class="create__price-time">
                 <div class="field-container create__price-time--wrapper">
-              <?= $form->field($model, 'budget')
+              <?= $form->field($taskForm, 'budget')
                   ->textInput(['class'=> 'input textarea input-money', 'placeholder' => '1000'])
                   ->label('Бюджет')
                   ->hint('Не заполняйте для оценки исполнителем')?>
@@ -82,7 +81,7 @@ use yii\widgets\ActiveForm;
 
 
               <div class="field-container create__price-time--wrapper">
-                  <?= $form->field($model, 'due_date',
+                  <?= $form->field($taskForm, 'due_date',
                       )
                       ->textInput(['class'=> 'input-middle input input-date', 'placeholder' => '10.11.2021'])
                       ->label('Сроки исполнения')
@@ -105,11 +104,11 @@ use yii\widgets\ActiveForm;
                 что всё в фокусе, а фото показывает объект со всех
                 ракурсов.</p>
             </div>
-              <?php if ($model->errors): ?>
+              <?php if ($taskForm->errors): ?>
             <div class="warning-item warning-item--error">
               <h2>Ошибки заполнения формы</h2>
-                <?php foreach ($model->errors as $label => $errors):?>
-              <h3> <?= $model->getAttributeLabel($label)?></h3>
+                <?php foreach ($taskForm->errors as $label => $errors):?>
+              <h3> <?= $taskForm->getAttributeLabel($label)?></h3>
 
               <p><?php foreach ($errors as $error): ?>
                       <?= $error ?><br>

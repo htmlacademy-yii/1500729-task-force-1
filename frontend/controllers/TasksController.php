@@ -6,7 +6,7 @@ use frontend\models\Categories;
 use frontend\models\Files;
 use frontend\models\FilterTasks;
 use frontend\models\FilterUsers;
-use frontend\models\NewTask;
+use frontend\models\TaskForm;
 use frontend\models\Responds;
 use frontend\models\TaskFiles;
 use frontend\models\Tasks;
@@ -33,7 +33,12 @@ class TasksController extends SecuredController
             'allow' => false,
             'actions' => ['create'],
             'matchCallback' => function ($rules, $action) {
+                if (Yii::$app->user->isGuest) {
+                    return false;
+                }
+
                 return Yii::$app->user->identity->role != Users::ROLE_AUTHOR;
+
             },
             'denyCallback' => function ($rules, $action) {
                 throw new BadRequestHttpException('Нет доступа');
@@ -122,14 +127,14 @@ class TasksController extends SecuredController
 
     public function actionCreate()
     {
-        $model = new NewTask();
+        $taskForm = new TaskForm();
         $categories = Categories::find()->all();
 
         if (Yii::$app->request->post()) {
-            $model->load(Yii::$app->request->post());
+            $taskForm->load(Yii::$app->request->post());
 
-            if ($model->validate()) {
-                $id = $model->createTask();
+            if ($taskForm->validate()) {
+                $id = $taskForm->createTask();
                 if (Yii::$app->session->get('files')) {
                     $files = Yii::$app->session->get('files');
                     foreach ($files as $name => $file) {
@@ -149,7 +154,7 @@ class TasksController extends SecuredController
             }
         }
         Yii::$app->session->remove('files');
-        return $this->render('create', ['model' => $model, 'categories' => $categories]);
+        return $this->render('create', ['taskForm' => $taskForm, 'categories' => $categories]);
     }
 
     public function actionUpload()
