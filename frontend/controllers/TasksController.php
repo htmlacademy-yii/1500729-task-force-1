@@ -1,11 +1,13 @@
 <?php
 
+
 namespace frontend\controllers;
 
 use frontend\models\Categories;
 use frontend\models\Files;
 use frontend\models\FilterTasks;
 use frontend\models\FilterUsers;
+use frontend\models\Reviews;
 use frontend\models\TaskForm;
 use frontend\models\Responds;
 use frontend\models\TaskFiles;
@@ -100,6 +102,8 @@ class TasksController extends SecuredController
     public function actionView($id)
     {
         $user_id = Yii::$app->user->identity->getId();
+        $review = new Reviews();
+        $taskDone = new Tasks();
 
         $task = Tasks::find()->where(['id' => $id])->with('category')
             ->with('taskFiles.file')->with('location')->with('author')->one();
@@ -108,10 +112,9 @@ class TasksController extends SecuredController
         }
 
         $_task = new Task($task->author_id, $task->executor_id);
-        $actions = $_task->getActiveActions($task->status, Yii::$app->user->identity->getId());
         $respondAuthor = Responds::find()->where(['task_id' => $task->id])->andWhere(['executor_id' => Yii::$app->user->identity->getId()])->one();
+        $model = new Responds();
         if (!$respondAuthor) {
-            $model = new Responds();
             $model->task_id = $id;
             $model->executor_id = Yii::$app->user->identity->getId();
             if (Yii::$app->request->post()) {
@@ -122,7 +125,14 @@ class TasksController extends SecuredController
                 return $this->redirect(['tasks/view', 'id' => $id]);
             }
         }
-        return $this->render('view', ['task' => $task, 'model' => $model, '_task' => $_task, 'respondAuthor' => $respondAuthor, 'user_id' => $user_id]);
+        return $this->render('view', ['task' => $task,
+            'model' => $model,
+            '_task' => $_task,
+            'respondAuthor' => $respondAuthor,
+            'user_id' => $user_id,
+            'review' => $review,
+            'taskDone' => $taskDone]);
+
     }
 
     public function actionCreate()
@@ -175,15 +185,80 @@ class TasksController extends SecuredController
             Yii::$app->session->set('files', $f);
         }
     }
-        public function actionChoose($taskId, $executorId) {
-            $task = Tasks::findOne($taskId);
-            $task->status = Task::STATUS_IN_WORK;
-            $task->executor_id = $executorId;
-            $task->save();
-            return $this->goHome();
-        }
 
-        public function actionDecline($taskId, $executorId) {
+    public function actionChoose($taskId, $executorId): Response
+    {
+        $task = Tasks::findOne($taskId);
+        $task->status = Task::STATUS_IN_WORK;
+        $task->executor_id = $executorId;
+        $task->save();
+        return $this->goHome();
+    }
 
+    public function actionRefuse($taskId, $executorId)
+    {
+        $task = Tasks::findOne($taskId);
+        $task->status = Task::STATUS_FAILED;
+        $task->save();
+        $executorId = Users::findOne($executorId);
+        if ($executorId->failed_tasks) {
+            $executorId->updateCounters(['failed_tasks' => 1]);
+        } else {
+            $executorId->failed_tasks = 1;
+            $executorId->save();
         }
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
+    }
+
+    public function actionDone($taskId)
+    {
+        $task = Tasks::findOne($taskId);
+        $review = new Reviews();
+        $review->task_id = $taskId;
+        if ($task->author_id == Yii::$app->user->id) {
+            if (Yii::$app->request->post()) {
+                $review->load(Yii::$app->request->post());
+                $task->load(Yii::$app->request->post());
+                if ($review->validate()) {
+                    $task->save();
+                    $review->save();
+
+                    if ($task->status == Task::STATUS_DONE) {
+                        if ($task->executor->done_tasks) {
+                            $task->executor->updateCounters(['done_tasks' => 1]);
+                        } else {
+                            $task->executor->done_tasks = 1;
+                            $task->executor->save();
+                        }
+                    } elseif ($task->status == Task::STATUS_FAILED) {
+                        if ($task->executor->failed_tasks) {
+                            $task->executor->updateCounters(['failed_tasks' => 1]);
+                        } else {
+                            $task->executor->failed_tasks = 1;
+                            $task->executor->save();
+                        }
+                    }
+                    return $this->redirect(['tasks/view', 'id' => $taskId]);
+                }
+            }
+        } else {
+            throw new BadRequestHttpException('Нет доступа');
+        }
+    }
+
+    public function actionDecline($respondId)
+    {
+        $respond = Responds::findOne($respondId);
+        $respond->decline = 1;
+        $respond->save();
+        return $this->redirect(['tasks/view', 'id' => $respond->task_id]);
+    }
+
+    public function actionCancel($taskId)
+    {
+        $task = Tasks::findOne($taskId);
+        $task->status = Task::STATUS_CANCEL;
+        $task->save();
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
+    }
 }

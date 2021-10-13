@@ -37,14 +37,14 @@ if (starRating.length) {
 
   starRating.addEventListener("click", function(event) {
     var stars = event.currentTarget.childNodes;
-    var rating = 0;
+    var ratio = 0;
 
     for (var i = 0; i < stars.length; i++) {
       var element = stars[i];
 
       if (element.nodeName === "SPAN") {
         element.className = "";
-        rating++;
+        ratio++;
       }
 
       if (element === event.target) {
@@ -52,8 +52,8 @@ if (starRating.length) {
       }
     }
 
-    var inputField = document.getElementById("rating");
-    inputField.value = rating;
+    var inputField = document.getElementById("ratio");
+    inputField.value = ratio;
   });
 }
 

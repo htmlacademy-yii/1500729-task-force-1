@@ -104,18 +104,18 @@ class Task
             throw new StatusException("Такого статуса не существует");
         }
          $activeActions = [];
-                if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = [ $this->actionCancel->getAction() => $this->actionCancel->getActionName() ];
-                }
+
                 if ($this->actionRespond->canUse($this->executorId, $userId, $this->authorId, $status)) {
                     $activeActions[] = [ $this->actionRespond->getAction() => $this->actionRespond->getActionName()];
                 }
-
+                if ($this->actionCancel->canUse($this->executorId, $userId, $this->authorId, $status)) {
+                    $activeActions[] = [$this->actionCancel->getAction() => $this->actionCancel->getActionName()];
+                }
                 if ($this->actionDone->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = $this->actionDone->getAction();
+                    $activeActions[] = [$this->actionDone->getAction() => $this->actionDone->getActionName()];
                 }
                 if ($this->actionDecline->canUse($this->executorId, $userId, $this->authorId, $status)) {
-                    $activeActions[] = $this->actionDecline->getAction();
+                    $activeActions[] = [$this->actionDecline->getAction() => $this->actionDecline->getActionName()];
                 }
 
 

@@ -13,12 +13,17 @@ use Yii;
  * @property string|null $content
  * @property int $task_id
  * @property int $executor_id
+ * @property int $decline
  *
  * @property Tasks $task
  * @property Users $executor
  */
 class Responds extends \yii\db\ActiveRecord
 {
+    /**
+     * @var mixed|null
+     */
+
     /**
      * {@inheritdoc}
      */
@@ -39,6 +44,7 @@ class Responds extends \yii\db\ActiveRecord
             [['content'], 'string', 'max' => 256],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['decline'], 'integer']
         ];
     }
 
@@ -54,6 +60,7 @@ class Responds extends \yii\db\ActiveRecord
             'content' => 'Content',
             'task_id' => 'Task ID',
             'executor_id' => 'Executor ID',
+            'decline' => 'Decline'
         ];
     }
 
