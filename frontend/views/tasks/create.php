@@ -66,7 +66,7 @@ use yii\widgets\ActiveForm;
 
             <div class="field-container">
               <label for="13">Локация</label>
-              <input class="input-navigation input-middle input" id="13" type="search" name="q"
+              <input id="autoComplete" class="input-navigation input-middle input" id="13" type="search" name="q"
                      placeholder="Санкт-Петербург, Калининский район">
               <span>Укажите адрес исполнения, если задание требует присутствия</span>
             </div>
@@ -124,4 +124,32 @@ use yii\widgets\ActiveForm;
       </section>
     </div>
   </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.min.js"></script>
+<script>
+    const autoCompleteJS = new autoComplete({
+        data: {
+            src: async (query) => {
+                try {
+                    const sourse = await fetch (`http://taskforce.loc/geo/index?query=${query}`);
+                    const data = await sourse.json();
+                    return data;
+                } catch (error) {
+                    return error;
+                }
+            }
+        },
+        searchEngine: "loose",
+        debounce: 500,
+        threshold: 5,
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value;
+                    autoCompleteJS.input.value = selection;
+                }
+            }
+        }
+    });
+</script>
 
