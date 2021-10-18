@@ -3,16 +3,15 @@
 /* @var $task \frontend\models\Tasks */
 /* @var $responds \frontend\models\Responds */
 /* @var $respondAuthor \frontend\models\Responds */
-/* @var $_task Task */
 /* @var $model \frontend\models\Responds */
 /* @var $review \frontend\models\Reviews */
-
+/** @var int $user_id */
 /** @var int $countAuthorTasks */
 
+use frontend\models\Tasks;
 use frontend\models\Users;
 use taskforce\app\RatioWidget;
 use taskforce\app\StarsWidget;
-use taskforce\app\Task;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use taskforce\helpers\PluralHelper;
@@ -76,7 +75,7 @@ use yii\widgets\ActiveForm;
                 </div>
                 <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
                     <div class="content-view__action-buttons">
-                        <?php foreach ($_task->getActiveActions($task->status, $user_id) as $action): ?>
+                        <?php foreach ($task->getActions($user_id) as $action): ?>
                             <button class=" button button__big-color <?= array_key_first($action) ?>-button open-modal"
                                     type="button"
                                     data-for="<?= array_key_first($action) ?>-form"><?= array_shift($action) ?>
@@ -112,7 +111,7 @@ use yii\widgets\ActiveForm;
                                         </p>
                                         <span><?= Html::encode($respond->budget) ?> ₽</span>
                                     </div>
-                                    <?php if ($task->author_id == $user_id && $task->status == $_task::STATUS_NEW && !$respond->decline): ?>
+                                    <?php if ($task->author_id == $user_id && $task->status == $task::STATUS_NEW && !$respond->decline): ?>
                                         <div class="feedback-card__actions">
                                             <?= Html::a('Подтвердить',
                                                 ['tasks/choose', 'taskId' => $task->id, 'executorId' => $respond->executor_id],
@@ -190,13 +189,13 @@ use yii\widgets\ActiveForm;
         'action' => ['tasks/done', 'taskId' => $task->id, 'status' => $task->status]
     ]) ?>
 
-    <?php $taskDone->status = Task::STATUS_DONE ?>
-    <?= $reviewForm->field($taskDone, 'status', ['options' => ['tag' => false]])
-        ->radioList([Task::STATUS_DONE => 'Да', Task::STATUS_FAILED => 'Возникли проблемы?'],
+    <?php $task->status = Tasks::STATUS_DONE ?>
+    <?= $reviewForm->field($task, 'status', ['options' => ['tag' => false]])
+        ->radioList([Tasks::STATUS_DONE => 'Да', Tasks::STATUS_FAILED => 'Возникли проблемы?'],
             [
                 'item' => function ($index, $label, $name) {
                     $class = ['yes', 'difficult'];
-                    $_value = [Task::STATUS_DONE, Task::STATUS_FAILED];
+                    $_value = [Tasks::STATUS_DONE, Tasks::STATUS_FAILED];
                     return "<input class=\"visually-hidden completion-input completion-input--{$class[$index]}\"
                      id='{$index}' type='radio' name='{$name}' value='{$_value[$index]}' ' >
                      <label class=\"completion-label completion-label--{$class[$index]}\" for='{$index}'>{$label}</label>";

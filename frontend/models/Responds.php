@@ -28,24 +28,39 @@ class Responds extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
     public static function tableName()
-    {
-        return 'responds';
-    }
+        {
+            return 'responds';
+        }
 
     /**
      * {@inheritdoc}
      */
     public function rules()
+        {
+            return [
+                [['dt_add'], 'safe'],
+                [['budget', 'task_id', 'executor_id'], 'required'],
+                [['budget', 'task_id', 'executor_id'], 'integer'],
+                [['content'], 'string', 'max' => 256],
+                [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],
+                [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['executor_id' => 'id']],
+                [['decline'], 'integer'],
+                [['executor_id'], 'validateUser'],
+                [['decline'], 'validateAuthor']
+            ];
+        }
+
+    public function validateUser($attribute, $params) {
+            if ($this->task->author_id === $attribute || $this->executor->role !== Users::ROLE_EXECUTOR) {
+            $this->addError($attribute, 'Откликаться на задания могут только исполнители');
+        }
+    }
+
+    public function validateAuthor($attribute)
     {
-        return [
-            [['dt_add'], 'safe'],
-            [['budget', 'task_id', 'executor_id'], 'required'],
-            [['budget', 'task_id', 'executor_id'], 'integer'],
-            [['content'], 'string', 'max' => 256],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['decline'], 'integer']
-        ];
+         if($this->task->author_id !== Yii::$app->user->id) {
+             $this->addError($attribute, 'Отклонить отклик может только автор');
+         }
     }
 
     /**

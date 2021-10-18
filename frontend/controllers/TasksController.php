@@ -4,15 +4,18 @@
 namespace frontend\controllers;
 
 use frontend\models\Categories;
+use frontend\models\ChooseExecutorForm;
 use frontend\models\Files;
 use frontend\models\FilterTasks;
 use frontend\models\FilterUsers;
+use frontend\models\RefuseTaskForm;
 use frontend\models\Reviews;
 use frontend\models\TaskForm;
 use frontend\models\Responds;
 use frontend\models\TaskFiles;
 use frontend\models\Tasks;
 use frontend\models\Users;
+use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use taskforce\app\Task;
 use Yii;
@@ -103,7 +106,7 @@ class TasksController extends SecuredController
     {
         $user_id = Yii::$app->user->identity->getId();
         $review = new Reviews();
-        $taskDone = new Tasks();
+
 
         $task = Tasks::find()->where(['id' => $id])->with('category')
             ->with('taskFiles.file')->with('location')->with('author')->one();
@@ -111,7 +114,6 @@ class TasksController extends SecuredController
             throw new NotFoundHttpException("Задание с ID {$id} не найдено");
         }
 
-        $_task = new Task($task->author_id, $task->executor_id);
         $respondAuthor = Responds::find()->where(['task_id' => $task->id])->andWhere(['executor_id' => Yii::$app->user->identity->getId()])->one();
         $model = new Responds();
         if (!$respondAuthor) {
@@ -127,11 +129,9 @@ class TasksController extends SecuredController
         }
         return $this->render('view', ['task' => $task,
             'model' => $model,
-            '_task' => $_task,
             'respondAuthor' => $respondAuthor,
             'user_id' => $user_id,
-            'review' => $review,
-            'taskDone' => $taskDone]);
+            'review' => $review]);
 
     }
 
@@ -188,26 +188,42 @@ class TasksController extends SecuredController
 
     public function actionChoose($taskId, $executorId): Response
     {
+        $chooseExecutor = new ChooseExecutorForm();
         $task = Tasks::findOne($taskId);
-        $task->status = Task::STATUS_IN_WORK;
-        $task->executor_id = $executorId;
-        $task->save();
-        return $this->goHome();
+        $chooseExecutor->author_id = $task->author_id;
+        $chooseExecutor->status = $task->status;
+        $chooseExecutor->user_id = Yii::$app->user->id;
+        if ($chooseExecutor->validate()) {
+            $task->status = Task::STATUS_IN_WORK;
+            $task->executor_id = $executorId;
+            $task->save();
+            return $this->goHome();
+        } else {
+            throw new BadRequestHttpException($chooseExecutor->getFirstError('user_id'));
+        }
     }
 
     public function actionRefuse($taskId, $executorId)
     {
+        $refuseTask = new RefuseTaskForm();
         $task = Tasks::findOne($taskId);
-        $task->status = Task::STATUS_FAILED;
-        $task->save();
-        $executorId = Users::findOne($executorId);
-        if ($executorId->failed_tasks) {
-            $executorId->updateCounters(['failed_tasks' => 1]);
+        $refuseTask->executor_id = $executorId;
+        $refuseTask->user_id = Yii::$app->user->id;
+        $refuseTask->status = $task->status;
+        if ($refuseTask->validate()) {
+            $task->status = Task::STATUS_FAILED;
+            $task->save();
+            $executorId = Users::findOne($executorId);
+            if ($executorId->failed_tasks) {
+                $executorId->updateCounters(['failed_tasks' => 1]);
+            } else {
+                $executorId->failed_tasks = 1;
+                $executorId->save();
+            }
+            return $this->redirect(['tasks/view', 'id' => $taskId]);
         } else {
-            $executorId->failed_tasks = 1;
-            $executorId->save();
+            throw new BadRequestHttpException($refuseTask->getFirstError('user_id'));
         }
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
     public function actionDone($taskId)
@@ -215,14 +231,12 @@ class TasksController extends SecuredController
         $task = Tasks::findOne($taskId);
         $review = new Reviews();
         $review->task_id = $taskId;
-        if ($task->author_id == Yii::$app->user->id) {
             if (Yii::$app->request->post()) {
                 $review->load(Yii::$app->request->post());
                 $task->load(Yii::$app->request->post());
                 if ($review->validate()) {
                     $task->save();
                     $review->save();
-
                     if ($task->status == Task::STATUS_DONE) {
                         if ($task->executor->done_tasks) {
                             $task->executor->updateCounters(['done_tasks' => 1]);
@@ -239,26 +253,34 @@ class TasksController extends SecuredController
                         }
                     }
                     return $this->redirect(['tasks/view', 'id' => $taskId]);
+                } else {
+                    throw new BadRequestHttpException($review->getFirstError('task_id'));
                 }
             }
-        } else {
-            throw new BadRequestHttpException('Нет доступа');
-        }
     }
 
     public function actionDecline($respondId)
     {
         $respond = Responds::findOne($respondId);
         $respond->decline = 1;
+        if ($respond->validate()) {
         $respond->save();
         return $this->redirect(['tasks/view', 'id' => $respond->task_id]);
+        } else {
+            throw new BadRequestHttpException('Отказаться может только автор задания');
+        }
     }
 
     public function actionCancel($taskId)
     {
         $task = Tasks::findOne($taskId);
-        $task->status = Task::STATUS_CANCEL;
-        $task->save();
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        if ($task->validateCancel()) {
+            $task->status = Task::STATUS_CANCEL;
+            $task->save();
+            return $this->redirect(['tasks/view', 'id' => $taskId]);
+        } else {
+            throw new BadRequestHttpException('Вы не можете отменить эту задачу');
+        }
+
     }
 }

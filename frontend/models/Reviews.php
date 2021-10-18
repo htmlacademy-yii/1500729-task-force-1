@@ -33,10 +33,18 @@ class Reviews extends \yii\db\ActiveRecord
         return [
             [['dt_add'], 'safe'],
             [['task_id', 'ratio'], 'required'],
-            [['task_id', 'ratio'], 'integer'],
+            [['ratio'], 'integer', 'min' => 1, 'max' => 5],
+            [['task_id'], 'integer'],
             [['content'], 'string', 'max' => 256],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'validateUser']
         ];
+    }
+
+    public function validateUser($attribute, $params) {
+        if ($this->task->author_id !== Yii::$app->user->id) {
+            $this->addError($attribute, 'Завершить задание может только его автор');
+        }
     }
 
     /**
