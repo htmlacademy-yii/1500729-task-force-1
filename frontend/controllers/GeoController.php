@@ -25,7 +25,8 @@ class GeoController extends SecuredController
          $response_data = json_decode($content, true);
          $data = [];
          foreach ($response_data['response']['GeoObjectCollection']['featureMember'] as $item) {
-             $data[] = $item['GeoObject']['metaDataProperty']['GeocoderMetaData']['text'];
+             $data[] = ["adress" => $item['GeoObject']['metaDataProperty']['GeocoderMetaData']['text'],
+                 'coordinates' => $item['GeoObject']['Point']['pos']];
          }
          $data_json = json_encode($data);
 

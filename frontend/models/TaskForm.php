@@ -13,6 +13,8 @@ class TaskForm extends Model {
     public $files;
     public $budget;
     public $due_date;
+    public $address;
+    public $coordinates;
 
     public function rules()
     {
@@ -24,9 +26,8 @@ class TaskForm extends Model {
             ['due_date', 'date', 'format' => 'YYYY-MM-DD', 'message' => 'Дата исполнения должна быть в формате ГГГГ-ММ-ДД'],
             ['title', 'string'],
             ['description', 'string'],
-
-
-
+            ['address', 'string'],
+            ['coordinates', 'string']
     ];
     }
 
@@ -38,8 +39,16 @@ class TaskForm extends Model {
         $task->budget = $this->budget;
         $task->author_id = \Yii::$app->user->identity->getId();
         $task->due_date = $this->due_date;
+        $task->address = $this->address;
+
+        if ($this->coordinates) {
+        $format_coordinates = explode(" ", $this->coordinates);
+        $task->latitude = (float)$format_coordinates[0];
+        $task->longitude = (float)$format_coordinates[1];
+        }
         $task->save();
         return $task->id;
     }
+
 
 }

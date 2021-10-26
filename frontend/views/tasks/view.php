@@ -60,14 +60,37 @@ use yii\widgets\ActiveForm;
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
                             <div class="content-view__map">
-                                <a href="#"><img src="/img/map.jpg" width="361" height="292"
-                                        <?php if ($task->location): ?>
-                                                 alt="<?= $task->location->location ?>, <?= Html::encode($task->address) ?>"></a>
-                                <?php endif; ?>
+                                <div id="map" style="width: 361px; height: 292px"></div>
                             </div>
-                            <?php if ($task->location): ?>
+                            <script type="text/javascript">
+                                // Функция ymaps.ready() будет вызвана, когда
+                                // загрузятся все компоненты API, а также когда будет готово DOM-дерево.
+                                ymaps.ready(init);
+                                function init(){
+                                    // Создание карты.
+                                    var myMap = new ymaps.Map("map", {
+                                        // Координаты центра карты.
+                                        // Порядок по умолчанию: «широта, долгота».
+                                        // Чтобы не определять координаты центра карты вручную,
+                                        // воспользуйтесь инструментом Определение координат.
+                                        center: <?= json_encode([$task->longitude, $task->latitude]) ?>,
+                                        // Уровень масштабирования. Допустимые значения:
+                                        // от 0 (весь мир) до 19.
+                                        zoom: 12
+                                    }),
+                                        myGeoObject = new ymaps.GeoObject({
+                                            // Описание геометрии.
+                                            geometry: {
+                                                type: "Point",
+                                                coordinates: <?= json_encode([(float)$task->longitude, (float)$task->latitude]) ?>
+                                            }
+                                        });
+                                }
+
+                            </script>
+                            <?php if ($task->address): ?>
                                 <div class="content-view__address">
-                                    <span class="address__town"><?= $task->location->location ?></span><br>
+                                    <span class="address__town"></span><br>
                                     <span><?= Html::encode($task->address) ?></span>
                                     <p>Вход под арку, код домофона 1122</p>
                                 </div>
