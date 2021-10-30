@@ -75,7 +75,7 @@ use yii\widgets\ActiveForm;
                 </div>
                 <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
                     <div class="content-view__action-buttons">
-                        <?php foreach ($task->getActions($user_id) as $action): ?>
+                        <?php foreach ($task->getActions($user_id, $respondAuthor) as $action): ?>
                             <button class=" button button__big-color <?= array_key_first($action) ?>-button open-modal"
                                     type="button"
                                     data-for="<?= array_key_first($action) ?>-form"><?= array_shift($action) ?>
@@ -154,9 +154,10 @@ use yii\widgets\ActiveForm;
         </section>
     </div>
 </main>
+
+    <?php if (!$respondAuthor): ?>
 <section class="modal response-form form-modal" id="response-form">
     <h2>Отклик на задание</h2>
-    <?php if (!$respondAuthor): ?>
         <?php $form = ActiveForm::begin([
             'method' => 'post',
             'action' => ['tasks/view', 'id' => $task->id],
@@ -175,11 +176,11 @@ use yii\widgets\ActiveForm;
         ?>
         <?= Html::submitButton('Отправить', ['class' => 'button modal-button']) ?>
         <?php ActiveForm::end() ?>
-    <?php else: ?>
-        <p>Вы уже откликались на это задание</p>
-    <?php endif; ?>
-    <button class="form-modal-close" type="button">Закрыть</button>
+        <button class="form-modal-close" type="button">Закрыть</button>
 </section>
+    <?php endif; ?>
+    
+
 
 <section class="modal completion-form form-modal" id="request-form">
     <h2>Завершение задания</h2>

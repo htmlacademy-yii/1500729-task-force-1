@@ -54,6 +54,9 @@ class Responds extends \yii\db\ActiveRecord
             if ($this->task->author_id === $attribute || $this->executor->role !== Users::ROLE_EXECUTOR) {
             $this->addError($attribute, 'Откликаться на задания могут только исполнители');
         }
+            if ($this->task->executor_id) {
+                $this->addError($attribute, 'На это задание уже выбран исполнитель');
+            }
     }
 
     public function validateAuthor($attribute)

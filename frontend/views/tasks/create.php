@@ -83,7 +83,7 @@ use yii\widgets\ActiveForm;
               <div class="field-container create__price-time--wrapper">
                   <?= $form->field($taskForm, 'due_date',
                       )
-                      ->textInput(['class'=> 'input-middle input input-date', 'placeholder' => '10.11.2021'])
+                      ->textInput(['class'=> 'input-middle input input-date', 'placeholder' => '2021-11-10'])
                       ->label('Сроки исполнения')
                       ->hint('Укажите крайний срок исполнения')?>
               </div>

@@ -9,49 +9,45 @@
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\widgets\ListView;
 
 $this->title = 'Задания';
 ?>
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">
-            <div class="new-task__wrapper">
-                <h1>Новые задания</h1>
-                <?php foreach ($tasks as $task): ?>
-                    <div class="new-task__card">
-                        <div class="new-task__title">
-                            <?= Html::a('<h2>' . Html::encode($task->title) . '</h2>', ['tasks/view', 'id' => $task->id], ['class' => 'link-regular'])?>
-                            <?= Html::a('<p>'. $task->category->title . '</p>',['tasks/index', 'category_id' => $task->category->id], ['class' => 'new-task__type link-regular'] )?>
+            <?= ListView::widget([
+                'dataProvider' => $dataProvider,
+                'itemView' => '_task',
+                'itemOptions' => [
+                    'tag' => false,
+                ],
+                'options' => [
+                    'tag' => false,
+                ],
+                'layout' => "<div class='new-task__wrapper'>
+                    <h1>Новые задания</h1>
+                        {items}
+                 </div>
+                 <div class='new-task__pagination'>
+                 {pager}\n
+                 </div>",
+                'pager' => [
 
-                        </div>
-                        <div class="new-task__icon new-task__icon--<?= $task->category->icon ?>"></div>
-                        <p class="new-task_description">
-                            <?= Html::encode($task->description) ?>
-                        </p>
-                        <?php if ($task->budget): ?>
-                        <b class="new-task__price new-task__price--translation"><?= Html::encode($task->budget) ?><b>
-                                ₽</b></b>
-                        <?php endif; ?>
-                        <?php if($task->location): ?>
-                        <p class="new-task__place"><?= Html::encode($task->location->location) ?>
-                            , <?= Html::encode($task->address) ?></p>
-                        <?php endif; ?>
-                        <span
-                            class="new-task__time"><?= Yii::$app->formatter->format($task->dt_add, 'relativeTime') ?></span>
-                    </div>
+                    'options' => [
+                        'class' => 'new-task__pagination-list',
+                    ],
+                    'prevPageLabel' => '<img src="/img/arrow.png">',
+                    'nextPageLabel' => '<img src="/img/arrow.png">',
+                    'prevPageCssClass' => 'pagination__item',
+                    'nextPageCssClass' => 'pagination__item',
+                    'pageCssClass' => 'pagination__item',
+                    'activePageCssClass' => 'pagination__item--current',
+                    'maxButtonCount' => 5
+                ],
+            ])
+            ?>
 
-                <?php endforeach; ?>
-            </div>
-            <div class="new-task__pagination">
-                <ul class="new-task__pagination-list">
-                    <li class="pagination__item"><a href="#"></a></li>
-                    <li class="pagination__item pagination__item--current">
-                        <a>1</a></li>
-                    <li class="pagination__item"><a href="#">2</a></li>
-                    <li class="pagination__item"><a href="#">3</a></li>
-                    <li class="pagination__item"><a href="#"></a></li>
-                </ul>
-            </div>
         </section>
         <section class="search-task">
             <div class="search-task__wrapper">
