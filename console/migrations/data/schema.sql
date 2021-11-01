@@ -1,4 +1,3 @@
-
 CREATE TABLE files
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
@@ -141,4 +140,3 @@ CREATE TABLE responds
     FOREIGN KEY (task_id) REFERENCES tasks (id),
     FOREIGN KEY (executor_id) REFERENCES users (id)
 );
-

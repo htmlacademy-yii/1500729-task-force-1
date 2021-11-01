@@ -26,7 +26,7 @@ $stars = round($user->calculateStars($user->id),2);
                             <b><?= $stars ?></b>
                         </div>
                         <b class="done-task">Выполнил <?= PluralHelper::Plural(['заказов', 'заказ', 'заказ', 'заказа', 'заказов', 'заказа'],
-                                count($user->executeTasks)) ?></b><b class="done-review">Получил <?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
+                                $user->done_tasks) ?></b><b class="done-review">Получил <?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
                                 count($reviews))  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark--current">

@@ -1,18 +1,31 @@
 <?php
 
+
 namespace frontend\controllers;
 
 use frontend\models\Categories;
+use frontend\models\ChooseExecutorForm;
 use frontend\models\Files;
 use frontend\models\FilterTasks;
 use frontend\models\FilterUsers;
+use frontend\models\RefuseTaskForm;
+use frontend\models\Reviews;
 use frontend\models\TaskForm;
 use frontend\models\Responds;
 use frontend\models\TaskFiles;
 use frontend\models\Tasks;
 use frontend\models\Users;
+use frontend\services\TaskCreateService;
+use frontend\services\TaskDoneService;
+use frontend\services\TaskFilterService;
+use frontend\services\TaskRefuseService;
+use frontend\services\TaskRespondService;
+use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
+use taskforce\app\Task;
 use Yii;
+use yii\base\Event;
+use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
@@ -58,51 +71,53 @@ class TasksController extends SecuredController
 
     public function actionIndex()
     {
-
-        $get = Yii::$app->request->get();
-        $model = new FilterTasks();
-        $model->load($get);
         $categories = Categories::find()->all();
-
+        $model = new FilterTasks();
         $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])
             ->orderBy(['dt_add' => SORT_DESC])
             ->with('category')
             ->with('location')->joinWith('responds');
-        if ($model->load(Yii::$app->request->get())) {
-            if ($model->category_id) {
-                $tasks = $tasks->andFilterWhere(['IN', 'category_id', $model->category_id]);
-            }
-            if ($model->search) {
-                $model->options = NULL;
-                $model->category_id = NULL;
-                $model->period = NULL;
-                $tasks = $tasks->andFilterWhere(['LIKE', 'title', $model->search]);
-            }
 
-            if ($model->options && ArrayHelper::isIn(1, $model->options)) {
-                $tasks = $tasks->andFilterWhere($model->getTasksWithoutResponds());
-            }
-            if ($model->options && ArrayHelper::isIn(2, $model->options)) {
-                $tasks = $tasks->andFilterWhere($model->getRemoteTasks());
-            }
-            if ($model->period) {
-                $tasks = $tasks->andFilterWhere($model->getPeriod());
-            }
+        if (Yii::$app->request->get()) {
+            $tasks = (new TaskFilterService())->filterTasks($tasks, Yii::$app->request->get(), $model);
         }
-
-        $tasks = $tasks->all();
-        return $this->render('tasks', ['tasks' => $tasks, 'model' => $model, 'categories' => $categories]);
+        $tasksProvider = new ActiveDataProvider([
+            'query' => $tasks,
+            'pagination' => [
+                'pageSize' => 5
+            ]
+        ]);
+        return $this->render('tasks', ['dataProvider' => $tasksProvider, 'model' => $model, 'categories' => $categories]);
     }
 
     public function actionView($id)
     {
+        $user_id = Yii::$app->user->identity->getId();
+        $review = new Reviews();
+        $model = new Responds();
         $task = Tasks::find()->where(['id' => $id])->with('category')
             ->with('taskFiles.file')->with('location')->with('author')->one();
+
         if (!$task) {
             throw new NotFoundHttpException("Задание с ID {$id} не найдено");
         }
 
-        return $this->render('view', ['task' => $task]);
+        $respondAuthor = Responds::find()->where(['task_id' => $task->id])->andWhere(['executor_id' => Yii::$app->user->identity->getId()])->one();
+
+        if (Yii::$app->request->post()) {
+            try {
+                (new TaskRespondService())->execute($respondAuthor, $model, Yii::$app->request->post(), $id);
+                return $this->redirect(['tasks/view', 'id' => $id]);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }
+
+        return $this->render('view', ['task' => $task,
+            'model' => $model,
+            'respondAuthor' => $respondAuthor,
+            'user_id' => $user_id,
+            'review' => $review]);
     }
 
     public function actionCreate()
@@ -111,26 +126,14 @@ class TasksController extends SecuredController
         $categories = Categories::find()->all();
 
         if (Yii::$app->request->post()) {
-            $taskForm->load(Yii::$app->request->post());
-
-            if ($taskForm->validate()) {
-                $id = $taskForm->createTask();
-                if (Yii::$app->session->get('files')) {
-                    $files = Yii::$app->session->get('files');
-                    foreach ($files as $name => $file) {
-                        $file_path = new Files();
-                        $file_path->path = '/uploads/' . $file;
-                        $file_path->name = $name;
-                        $file_path->save();
-                        $task_file = new TaskFiles();
-                        $task_file->file_id = $file_path->id;
-                        $task_file->task_id = $id;
-                        $task_file->save();
-                    }
-                    Yii::$app->session->remove('files');
+            try {
+                $taskForm->load(Yii::$app->request->post());
+                if ($taskForm->validate()) {
+                    $taskId = (new TaskCreateService())->execute($taskForm);
+                    return $this->redirect(['tasks/view', 'id' => $taskId]);
                 }
-
-                return $this->redirect(['tasks/view', 'id' => $id]);
+            } catch (\yii\base\Exception $exception) {
+                throw $exception;
             }
         }
         Yii::$app->session->remove('files');
@@ -139,8 +142,6 @@ class TasksController extends SecuredController
 
     public function actionUpload()
     {
-
-
         $files = UploadedFile::getInstanceByName('files');
         $name = $files->name;
 
@@ -154,5 +155,77 @@ class TasksController extends SecuredController
             $f[$name] = $filename;
             Yii::$app->session->set('files', $f);
         }
+    }
+
+    public function actionChoose($taskId, $executorId): Response
+    {
+        $chooseExecutor = new ChooseExecutorForm();
+        $task = Tasks::findOne($taskId);
+        $chooseExecutor->author_id = $task->author_id;
+        $chooseExecutor->status = $task->status;
+        $chooseExecutor->user_id = Yii::$app->user->id;
+        if ($chooseExecutor->validate()) {
+            $task->status = Task::STATUS_IN_WORK;
+            $task->executor_id = $executorId;
+            $task->save();
+            return $this->goHome();
+        } else {
+            throw new BadRequestHttpException($chooseExecutor->getFirstError('user_id'));
+        }
+    }
+
+    public function actionRefuse($taskId, $executorId)
+    {
+        $refuseTask = new RefuseTaskForm();
+        $task = Tasks::findOne($taskId);
+
+        $refuseTask->executor_id = $executorId;
+        $refuseTask->user_id = Yii::$app->user->id;
+        $refuseTask->status = $task->status;
+
+        if ($refuseTask->validate()) {
+            (new TaskRefuseService())->execute($task, $executorId);
+            return $this->redirect(['tasks/view', 'id' => $taskId]);
+        } else {
+            throw new BadRequestHttpException($refuseTask->getFirstError('user_id'));
+        }
+    }
+
+    public function actionDone($taskId)
+    {
+        try {
+            if (!Yii::$app->request->post()) {
+                throw new \yii\base\Exception('Некорректный запрос', 400);
+            }
+            (new TaskDoneService())->execute(Yii::$app->request->post(), $taskId);
+            return $this->redirect(['tasks/view', 'id' => $taskId]);
+        } catch (\yii\base\Exception $exception) {
+            throw $exception;
+        }
+    }
+
+    public function actionDecline($respondId)
+    {
+        $respond = Responds::findOne($respondId);
+        $respond->decline = 1;
+        if ($respond->validate()) {
+            $respond->save();
+            return $this->redirect(['tasks/view', 'id' => $respond->task_id]);
+        } else {
+            throw new BadRequestHttpException('Отказаться может только автор задания');
+        }
+    }
+
+    public function actionCancel($taskId)
+    {
+        $task = Tasks::findOne($taskId);
+        if ($task->validateCancel()) {
+            $task->status = Task::STATUS_CANCEL;
+            $task->save();
+            return $this->redirect(['tasks/view', 'id' => $taskId]);
+        } else {
+            throw new BadRequestHttpException('Вы не можете отменить эту задачу');
+        }
+
     }
 }

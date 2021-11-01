@@ -21,6 +21,6 @@ abstract class AbstractTaskAction
     }
 
 
-    abstract protected function canUse(int $executorId, int $userId, int $authorId, string $status);
+    abstract protected function canUse(int $executorId, int $userId, int $authorId, int $status);
 }
 

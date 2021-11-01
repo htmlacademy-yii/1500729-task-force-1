@@ -7,7 +7,9 @@ use frontend\models\FilterUsers;
 use frontend\models\Responds;
 use frontend\models\Reviews;
 use frontend\models\Users;
+use frontend\services\UserFilterService;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -16,42 +18,24 @@ class UsersController extends SecuredController
 {
     public function actionIndex()
     {
-           $get = Yii::$app->request->get();
            $model = new FilterUsers();
-           $model->load($get);
-
         $categories = Categories::find()->all();
         $users = Users::find()->where(['role' => Users::ROLE_EXECUTOR])
             ->with('executorCategories.category')->with('executeTasks.reviews')
             ->joinWith('executeTasks')
-            ->joinWith('executorCategories')
-            ->orderBy('dt_add DESC');
-        if ($model->load(Yii::$app->request->get())) {
-            if ($model->search) {
-                $model->options = NULL;
-                $model->category_id = NULL;
-                $users = $users->andFilterWhere($model->getSearch());
-            }
-            if ($model->options && ArrayHelper::isIn(1,$model->options)) {
-                $users = $users->andFilterWhere($model->getFreeExecutors());
-            }
-            if ($model->options && ArrayHelper::isIn(2,$model->options)) {
-                $users = $users->andFilterWhere($model->getOnlineUsers());
-            }
-            if ($model->options && ArrayHelper::isIn(3,$model->options)) {
-                $users = $users->andFilterWhere($model->getUsersWithReviews());
-            }
-            if ($model->options && ArrayHelper::isIn(4,$model->options)) {
-                $users = $users->andFilterWhere($model->getFavouriteUsers());
-            }
-            if ($model->category_id) {
-            $users = $users->andFilterWhere($model->filterCategories());
-            }
+            ->with('executorCategories')->distinct();
 
+        if (Yii::$app->request->get()) {
+            $users = (new UserFilterService())->filterUsers($users, Yii::$app->request->get(), $model);
         }
-        $users = $users->all();
-
-        return $this->render('index', ['users' => $users, 'model' => $model, 'categories' => $categories]);
+        
+        $usersProvider = new ActiveDataProvider([
+            'query' => $users,
+            'pagination' => [
+                'pageSize' => 5
+            ]
+        ]);
+        return $this->render('index', ['dataProvider' => $usersProvider, 'model' => $model, 'categories' => $categories]);
     }
 
     public function actionView($id) {
