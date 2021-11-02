@@ -34,6 +34,8 @@ class TaskFilterService
             if ($model->period) {
                 return $task->andFilterWhere($model->getPeriod());
             }
+            return $task;
+
         } catch (\Exception $e) {
             throw $e;
         }

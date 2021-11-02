@@ -55,6 +55,7 @@ use yii\widgets\ActiveForm;
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
+                    <?php if ($task->address):?>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
@@ -68,24 +69,18 @@ use yii\widgets\ActiveForm;
                                 function init(){
                                     // Создание карты.
                                     var myMap = new ymaps.Map("map", {
-                                        // Координаты центра карты.
-                                        // Порядок по умолчанию: «широта, долгота».
-                                        // Чтобы не определять координаты центра карты вручную,
-                                        // воспользуйтесь инструментом Определение координат.
                                         center: <?= json_encode([$task->longitude, $task->latitude]) ?>,
-                                        // Уровень масштабирования. Допустимые значения:
-                                        // от 0 (весь мир) до 19.
-                                        zoom: 12
+                                        zoom: 14
                                     }),
                                         myGeoObject = new ymaps.GeoObject({
                                             // Описание геометрии.
                                             geometry: {
                                                 type: "Point",
-                                                coordinates: <?= json_encode([(float)$task->longitude, (float)$task->latitude]) ?>
+                                                coordinates:  <?= json_encode([$task->longitude, $task->latitude]) ?>
                                             }
                                         });
+                                    myMap.geoObjects.add(myGeoObject);
                                 }
-
                             </script>
                             <?php if ($task->address): ?>
                                 <div class="content-view__address">
@@ -96,6 +91,7 @@ use yii\widgets\ActiveForm;
                             <?php endif; ?>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
                     <div class="content-view__action-buttons">
@@ -203,7 +199,7 @@ use yii\widgets\ActiveForm;
         <button class="form-modal-close" type="button">Закрыть</button>
 </section>
     <?php endif; ?>
-    
+
 
 
 <section class="modal completion-form form-modal" id="request-form">

@@ -77,6 +77,8 @@ use yii\widgets\ActiveForm;
                     <?= $form->field($taskForm, 'coordinates')->
                         textInput(['id' => "coordinates",
                         'type' => "hidden"])->label(false) ?>
+
+
                 </div>
 
                 <div class="create__price-time">
@@ -157,8 +159,11 @@ use yii\widgets\ActiveForm;
                 selection: (event) => {
                     const selection = event.detail.selection.match;
                     const coordinates = event.detail.selection.value.coordinates;
+
                     autoCompleteJS.input.value = selection;
                     document.getElementById('coordinates').value = coordinates;
+
+
                 }
             }
         }
