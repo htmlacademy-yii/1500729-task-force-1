@@ -2,6 +2,8 @@
 /* @var $this yii\web\View */
 /* @var $users \frontend\models\Users[] */
 /* @var $model \frontend\models\FilterUsers */
+/* @var $dataProvider \yii\data\ActiveDataProvider */
+/* @var $categories \frontend\models\Categories */
 
 use taskforce\app\StarsWidget;
 use taskforce\helpers\PluralHelper;
@@ -9,6 +11,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use frontend\controllers\UsersController;
 use yii\widgets\ActiveForm;
+use yii\widgets\ListView;
 
 $this->title = 'Задания';
 ?>
@@ -16,38 +19,37 @@ $this->title = 'Задания';
 <main class="page-main">
     <div class="main-container page-container">
         <section class="user__search">
-            <?php foreach ($users as $user): ?>
-                <?php $count = 0;
-                      $stars = round($user->calculateStars($user->id),2); ?>
-            <div class="content-view__feedback-card user__search-wrapper">
-                <div class="feedback-card__top">
-                    <div class="user__search-icon">
-                        <a href="user.html"><img src="/img/man-glasses.jpg" width="65" height="65"></a>
-                        <span><?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
-                                                        count($user->executeTasks)) ?></span>
-                        <?php foreach ($user->executeTasks as $task) {
-                            $count = $count + count ($task->reviews);
-                        } ?>
-                        <span><?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
-                                                        $count) ?> </span>
-                    </div>
-                    <div class="feedback-card__top--name user__search-card">
-                        <p class="link-name"><?= Html::a($user->name, ['users/view', 'id' => $user->id], ['class' => 'link-regular']) ?></p>
-                        <?= StarsWidget::widget(['stars' => $stars]) ?>
-                        <b><?= $stars ?></b>
-                        <p class="user__search-content">
-                            <?= Html::encode($user->information)?>
-                        </p>
-                    </div>
-                    <span class="new-task__time">Был на сайте <?= Yii::$app->formatter->format($user->dt_last_activity, 'relativeTime')?></span>
-                </div>
-                <div class="link-specialization user__search-link--bottom">
-                    <?php foreach ($user->executorCategories as $category): ?>
-                    <a href="browse.html" class="link-regular"><?= $category->category->title ?></a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endforeach; ?>
+            <?= ListView::widget([
+                'dataProvider' => $dataProvider,
+                'itemView' => '_users',
+                'itemOptions' => [
+                    'tag' => false,
+                ],
+                'options' => [
+                    'tag' => false,
+                ],
+                'layout' => "
+
+                        {items}
+
+                 <div class='new-task__pagination'>
+                 {pager}\n
+                 </div>",
+                'pager' => [
+
+                    'options' => [
+                        'class' => 'new-task__pagination-list',
+                    ],
+                    'prevPageLabel' => '<img src="/img/arrow.png">',
+                    'nextPageLabel' => '<img src="/img/arrow.png">',
+                    'prevPageCssClass' => 'pagination__item',
+                    'nextPageCssClass' => 'pagination__item',
+                    'pageCssClass' => 'pagination__item',
+                    'activePageCssClass' => 'pagination__item--current',
+                    'maxButtonCount' => 5
+                ],
+            ])
+            ?>
         </section>
         <section class="search-task">
             <div class="search-task__wrapper">

@@ -184,4 +184,31 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Locations::class, ['id' => 'location_id']);
     }
+
+    public function getActions(int $user_id, ?object $respond_id) {
+          $activeActions = [];
+
+
+          if ($this->executor_id !== $user_id && $user_id !== $this->author_id && $this->status === self::STATUS_NEW  && !$respond_id) {
+              $activeActions[] = ['response' => 'Откликнуться'];
+          }
+          if ($user_id === $this->author_id && $this->status === self::STATUS_NEW) {
+              $activeActions[] = ['action_cancel' => 'Отменить задачу'];
+          }
+          if ($user_id === $this->author_id && $this->status === self::STATUS_IN_WORK) {
+              $activeActions[] = ['request' => 'Завершить'];
+          }
+          if ($user_id === $this->executor_id && $this->status === self::STATUS_IN_WORK) {
+              $activeActions[] = ['refusal' => 'Отказаться'];
+          }
+
+          return $activeActions;
+    }
+     public function validateCancel():bool {
+        if ($this->author_id === Yii::$app->user->id && $this->status === self::STATUS_NEW) {
+            return true;
+        } else {
+            return false;
+        }
+     }
 }
