@@ -18,8 +18,26 @@ use taskforce\helpers\PluralHelper;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
+$this->registerJsFile(
+    'https://api-maps.yandex.ru/2.1/?apikey=' . Yii::$app->params['yandexGeocoder'] . '&lang=ru_RU',
+      ['position' => \yii\web\View::POS_HEAD]);
+$this->registerJs("
+                                ymaps.ready(init);
+                                function init(){
 
-
+                                    var myMap = new ymaps.Map('map', {
+                                        center: [$task->longitude, $task->latitude],
+                                        zoom: 14
+                                    }),
+                                        myGeoObject = new ymaps.GeoObject({
+                                            // Описание геометрии.
+                                            geometry: {
+                                                type: 'Point',
+                                                coordinates:  [$task->longitude, $task->latitude]
+                                            }
+                                        });
+                                    myMap.geoObjects.add(myGeoObject);
+                                }", \yii\web\View::POS_READY);
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -62,26 +80,7 @@ use yii\widgets\ActiveForm;
                             <div class="content-view__map">
                                 <div id="map" style="width: 361px; height: 292px"></div>
                             </div>
-                            <script type="text/javascript">
-                                // Функция ymaps.ready() будет вызвана, когда
-                                // загрузятся все компоненты API, а также когда будет готово DOM-дерево.
-                                ymaps.ready(init);
-                                function init(){
-                                    // Создание карты.
-                                    var myMap = new ymaps.Map("map", {
-                                        center: <?= json_encode([$task->longitude, $task->latitude]) ?>,
-                                        zoom: 14
-                                    }),
-                                        myGeoObject = new ymaps.GeoObject({
-                                            // Описание геометрии.
-                                            geometry: {
-                                                type: "Point",
-                                                coordinates:  <?= json_encode([$task->longitude, $task->latitude]) ?>
-                                            }
-                                        });
-                                    myMap.geoObjects.add(myGeoObject);
-                                }
-                            </script>
+
                             <?php if ($task->address): ?>
                                 <div class="content-view__address">
                                     <span class="address__town"></span><br>
@@ -275,5 +274,4 @@ use yii\widgets\ActiveForm;
 </section>
 </div>
 <div class="overlay"></div>
-<script src="./js/main.js"></script>
-<script src="./js/messenger.js"></script>
+

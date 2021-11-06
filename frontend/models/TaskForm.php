@@ -35,27 +35,6 @@ class TaskForm extends Model
         ];
     }
 
-    public function createTask()
-    {
-        $author = \Yii::$app->user->identity;
-        $task = new Tasks();
-        $task->title = $this->title;
-        $task->description = $this->description;
-        $task->category_id = $this->category_id;
-        $task->budget = $this->budget;
-        $task->author_id = $author->getId();
-        $task->due_date = $this->due_date;
-        $task->address = $this->address;
-
-        if ($this->coordinates) {
-            $format_coordinates = explode(" ", $this->coordinates);
-            $task->latitude = (float)$format_coordinates[0];
-            $task->longitude = (float)$format_coordinates[1];
-            $task->location_id = $author->location_id;
-        }
-        $task->save();
-        return $task->id;
-    }
     public function validateValue($attribute, $params) {
         if (!$this->coordinates && $attribute) {
             $this->addError($attribute, "Пожалуйста, выберите адрес из выпадающего списка");
