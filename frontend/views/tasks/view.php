@@ -169,7 +169,7 @@ use yii\widgets\ActiveForm;
             </div>
             <div id="chat-container">
                 <!--                    добавьте сюда атрибут task с указанием в нем id текущего задания-->
-                <chat class="connect-desk__chat"></chat>
+                <chat class="connect-desk__chat" task="<?= $task->id ?>" sender="<?= $user_id ?>" recepient="<?= $user_id === $task->author_id ? $task->executor_id : $task->author_id ?>"></chat>
             </div>
         </section>
     </div>
@@ -275,5 +275,4 @@ use yii\widgets\ActiveForm;
 </section>
 </div>
 <div class="overlay"></div>
-<script src="./js/main.js"></script>
-<script src="./js/messenger.js"></script>
+

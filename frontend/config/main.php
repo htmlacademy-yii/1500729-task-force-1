@@ -12,9 +12,18 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    'modules' => [
+        'api' => [
+            'class' => 'frontend\modules\api\Module'
+        ]
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
+
         ],
         'user' => [
             'identityClass' => 'frontend\models\Users',
@@ -48,7 +57,11 @@ return [
                 'task/view/<id:\d+>' => 'tasks/view',
                 '' => 'site/index',
                 'task/new' => 'tasks/create',
-                'geo/index/<query:\d+>' => 'geo/index'
+                'geo/index/<query:\d+>' => 'geo/index',
+                ['class' => 'yii\rest\UrlRule',
+                    'controller' => 'api/tasks',
+                    ],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'api/messages', 'pluralize' => false],
             ],
         ],
 
