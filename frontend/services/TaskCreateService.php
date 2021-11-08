@@ -5,6 +5,7 @@ namespace frontend\services;
 use frontend\models\Files;
 use frontend\models\TaskFiles;
 use frontend\models\TaskForm;
+use frontend\models\Tasks;
 use Yii;
 
 class TaskCreateService
@@ -15,7 +16,8 @@ class TaskCreateService
         $db = Yii::$app->db;
         $transaction = $db->beginTransaction();
         try {
-            $task_id = $task->createTask();
+            $task_id = $this->createTask($task);
+
             if (Yii::$app->session->get('files')) {
                 foreach (Yii::$app->session->get('files') as $name => $file) {
                     $file_id = $this->createFiles($file, $name);
@@ -49,4 +51,25 @@ class TaskCreateService
         return $task_file;
     }
 
+    private function createTask(TaskForm $taskForm) {
+        $author = \Yii::$app->user->identity;
+        $task = new Tasks();
+        $task->title = $taskForm->title;
+        $task->description = $taskForm->description;
+        $task->category_id = $taskForm->category_id;
+        $task->budget = $taskForm->budget;
+        $task->author_id = $author->getId();
+        $task->due_date = $taskForm->due_date;
+        $task->address = $taskForm->address;
+
+        if ($taskForm->coordinates) {
+            $format_coordinates = explode(" ", $taskForm->coordinates);
+            $task->latitude = (float)$format_coordinates[0];
+            $task->longitude = (float)$format_coordinates[1];
+            $task->location_id = $author->location_id;
+        }
+        if($task->save()) {
+        return $task->id;
+        }
+    }
 }

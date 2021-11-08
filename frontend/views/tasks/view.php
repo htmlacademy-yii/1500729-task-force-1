@@ -18,7 +18,26 @@ use taskforce\helpers\PluralHelper;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
+$this->registerJsFile(
+    'https://api-maps.yandex.ru/2.1/?apikey=' . Yii::$app->params['yandexGeocoder'] . '&lang=ru_RU',
+      ['position' => \yii\web\View::POS_HEAD]);
+$this->registerJs("
+                                ymaps.ready(init);
+                                function init(){
 
+                                    var myMap = new ymaps.Map('map', {
+                                        center: [$task->longitude, $task->latitude],
+                                        zoom: 14
+                                    }),
+                                        myGeoObject = new ymaps.GeoObject({
+                                            // Описание геометрии.
+                                            geometry: {
+                                                type: 'Point',
+                                                coordinates:  [$task->longitude, $task->latitude]
+                                            }
+                                        });
+                                    myMap.geoObjects.add(myGeoObject);
+                                }", \yii\web\View::POS_READY);
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -54,24 +73,24 @@ use yii\widgets\ActiveForm;
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
+                    <?php if ($task->address):?>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
                             <div class="content-view__map">
-                                <a href="#"><img src="/img/map.jpg" width="361" height="292"
-                                        <?php if ($task->location): ?>
-                                                 alt="<?= $task->location->location ?>, <?= Html::encode($task->address) ?>"></a>
-                                <?php endif; ?>
+                                <div id="map" style="width: 361px; height: 292px"></div>
                             </div>
-                            <?php if ($task->location): ?>
+
+                            <?php if ($task->address): ?>
                                 <div class="content-view__address">
-                                    <span class="address__town"><?= $task->location->location ?></span><br>
+                                    <span class="address__town"></span><br>
                                     <span><?= Html::encode($task->address) ?></span>
                                     <p>Вход под арку, код домофона 1122</p>
                                 </div>
                             <?php endif; ?>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
                     <div class="content-view__action-buttons">
@@ -179,7 +198,7 @@ use yii\widgets\ActiveForm;
         <button class="form-modal-close" type="button">Закрыть</button>
 </section>
     <?php endif; ?>
-    
+
 
 
 <section class="modal completion-form form-modal" id="request-form">
@@ -255,5 +274,4 @@ use yii\widgets\ActiveForm;
 </section>
 </div>
 <div class="overlay"></div>
-<script src="./js/main.js"></script>
-<script src="./js/messenger.js"></script>
+

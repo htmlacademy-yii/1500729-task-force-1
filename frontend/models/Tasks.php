@@ -21,6 +21,8 @@ use Yii;
  * @property int|null $status
  * @property int|null $executor_id
  * @property string $location0
+ * @property float|null $latitude
+ * @property float|null $longitude
  *
  * @property Messages[] $messages
  * @property Responds[] $responds
@@ -64,6 +66,7 @@ class Tasks extends \yii\db\ActiveRecord
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::class, 'targetAttribute' => ['city_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::class, 'targetAttribute' => ['category_id' => 'id']],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::class, 'targetAttribute' => ['location_id' => 'id']],
+
         ];
     }
 
@@ -86,7 +89,9 @@ class Tasks extends \yii\db\ActiveRecord
             'due_date' => 'Due Date',
             'status' => 'Status',
             'executor_id' => 'Executor ID',
-            'location' => 'Location'
+            'location' => 'Location',
+            'latitude' => 'Latitude',
+            'longitude' => 'Longitude'
         ];
     }
 

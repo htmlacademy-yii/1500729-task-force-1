@@ -4,6 +4,7 @@
  * @var $model \frontend\models\FilterUsers
  * @var $tasks \frontend\models\Tasks
  * @var $categories \frontend\models\Categories
+ *  @var \yii\data\ActiveDataProvider $dataProvider
  */
 
 use yii\helpers\ArrayHelper;
@@ -16,7 +17,8 @@ $this->title = 'Задания';
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">
-            <?= ListView::widget([
+            <?=
+            ListView::widget([
                 'dataProvider' => $dataProvider,
                 'itemView' => '_task',
                 'itemOptions' => [
