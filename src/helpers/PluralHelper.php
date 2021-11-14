@@ -7,7 +7,7 @@ class PluralHelper
 {
     public static function Plural(array $words, ?int $count) {
         if (!$count) {
-            $count === 0;
+            $count = 0;
         }
         return Yii::$app->i18n->format(
             '{n, plural, =0{0 '.$words[0]. '} =1{1 '.$words[1]. '}

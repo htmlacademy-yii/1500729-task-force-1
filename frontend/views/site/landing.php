@@ -72,7 +72,7 @@ AppAsset::register($this);
                 <p>Сломался кран на кухне? Надо отправить документы? Нет времени самому гулять с собакой?
                     У нас вы быстро найдёте исполнителя для любой жизненной ситуации?<br>
                     Быстро, безопасно и с гарантией. Просто, как раз, два, три. </p>
-                <button class="button">Создать аккаунт</button>
+                <?= Html::a('<button class="button">Создать аккаунт</button>', ['registration/index'] )?>
             </div>
             <div class="landing-center">
                 <div class="landing-instruction">

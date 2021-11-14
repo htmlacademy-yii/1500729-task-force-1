@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use phpDocumentor\Reflection\Types\True_;
 use Yii;
 
 /**
@@ -71,6 +72,8 @@ class Messages extends \yii\db\ActiveRecord
         return $field;
     }
 
+
+
     /**
      * Gets query for [[Task]].
      *
@@ -99,5 +102,13 @@ class Messages extends \yii\db\ActiveRecord
     public function getRecipient()
     {
         return $this->hasOne(Users::class, ['id' => 'recipient_id']);
+    }
+
+    public function isMine($user_id) {
+        if ($user_id !== $this->sender_id) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -8,6 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
+    'timeZone' => 'Europe/Moscow',
     'language' => 'ru',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -64,7 +65,18 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'api/messages', 'pluralize' => false],
             ],
         ],
-
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'defaultTimeZone' => 'Europe/Moscow',
+            'timeZone' => 'GMT+3',
+        ]
     ],
+    'on beforeAction' => function() {
+        if (Yii::$app->user->identity) {
+            $user = \frontend\models\Users::findOne(Yii::$app->user->id);
+            $user->dt_last_activity = date('Y-m-d H:i:s');
+            $user->save();
+        }
+    },
     'params' => $params,
 ];
