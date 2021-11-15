@@ -3,6 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use taskforce\app\EventWidget;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
@@ -110,19 +111,7 @@ AppAsset::register($this);
             </div>
             <div class="header__lightbulb"></div>
             <div class="lightbulb__pop-up">
-                <h3>Новые события</h3>
-                <p class="lightbulb__new-task lightbulb__new-task--message">
-                    Новое сообщение в чате
-                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--executor">
-                    Выбран исполнитель для
-                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--close">
-                    Завершено задание
-                    <a href="view.html" class="link-regular">«Помочь с курсовой»</a>
-                </p>
+                <?= EventWidget::widget() ?>
             </div>
             <div class="header__account">
                 <a class="header__account-photo">

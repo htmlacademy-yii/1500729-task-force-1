@@ -81,11 +81,11 @@ class Notifications extends \yii\db\ActiveRecord
 
     public function getTypes() {
         return [
-          'message' => 'Новое сообщение в чате ' . $this->task->title,
-            'executor' => 'Выбран исполнитель для ' . $this->task->title,
-            'close' => 'Завершено задание ' . $this->task->title,
-            'respond' => 'Новый отклик к заданию ' . $this->task->title,
-            'refuse' => 'Исполнитель отказался от выполнения задания ' . $this->task->title
+          'message' => 'Новое сообщение в чате ',
+            'executor' => 'Выбран исполнитель для ',
+            'close' => 'Завершено задание ',
+            'respond' => 'Новый отклик к заданию ',
+            'refuse' => 'Исполнитель отказался от выполнения задания '
         ];
     }
 }

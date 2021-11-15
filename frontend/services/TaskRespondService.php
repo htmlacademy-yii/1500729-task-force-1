@@ -29,12 +29,20 @@ class TaskRespondService
     private function sendNotification($task_id) {
         $notification = new Notifications();
         $notification->task_id = $task_id;
-        $notification->recipient = Tasks::findOne(['id' =>$task_id])->author_id;
+        $notification->recipient_id = Tasks::findOne($task_id)->author_id;
         $notification->type = 'respond';
         if ($notification->validate()) {
             $notification->save();
+            $this->sendEmail($notification);
         } else {
             throw new Exception("Не удалось отправить уведомление");
         }
+    }
+    private function sendEmail($notification) {
+        Yii::$app->mailer->compose('_respond', ['notification' => $notification])
+            ->setFrom(Yii::$app->params['adminEmail'])
+            ->setTo($notification->recipient->email)
+            ->setSubject('Новый отклик к заданию')
+            ->send();
     }
 }
