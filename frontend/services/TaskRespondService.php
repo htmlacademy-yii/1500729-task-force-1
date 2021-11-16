@@ -19,8 +19,9 @@ class TaskRespondService
             $model->load($data);
             if ($model->validate()) {
                 $model->save();
+                $this->sendNotification($task_id);
             }
-            $this->sendNotification($task_id);
+
         } else {
             throw new BadRequestHttpException('Вы уже откликались на это задание');
         }

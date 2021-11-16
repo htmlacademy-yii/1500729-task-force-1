@@ -13,6 +13,10 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
 AppAsset::register($this);
+$this->registerJs("var lightbulb = document.getElementsByClassName('header__lightbulb')[0];
+lightbulb.addEventListener('mouseover', function () {
+  fetch('/events/index');
+});");
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

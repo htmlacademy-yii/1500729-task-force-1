@@ -15,6 +15,7 @@ use frontend\models\Responds;
 use frontend\models\TaskFiles;
 use frontend\models\Tasks;
 use frontend\models\Users;
+use frontend\services\ChooseService;
 use frontend\services\TaskCreateService;
 use frontend\services\TaskDoneService;
 use frontend\services\TaskFilterService;
@@ -168,6 +169,7 @@ class TasksController extends SecuredController
             $task->status = Task::STATUS_IN_WORK;
             $task->executor_id = $executorId;
             $task->save();
+            (new ChooseService())->sendNotification($taskId, $executorId);
             return $this->goHome();
         } else {
             throw new BadRequestHttpException($chooseExecutor->getFirstError('user_id'));

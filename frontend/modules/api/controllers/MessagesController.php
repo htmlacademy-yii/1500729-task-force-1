@@ -3,6 +3,7 @@
 namespace frontend\modules\api\controllers;
 
 use frontend\models\Messages;
+use frontend\services\MessageService;
 use yii\data\ActiveDataProvider;
 use yii\debug\models\timeline\DataProvider;
 use yii\rest\ActiveController;
@@ -57,6 +58,7 @@ class MessagesController extends ActiveController
         $newMessage->recipient_id = $body->recipient_id;
         $newMessage->dt_add = date('Y-m-d H:i:s');
         if ($newMessage->save()) {
+            (new MessageService())->sendNotification($newMessage->task_id, $newMessage->recipient_id);
             $response = \Yii::$app->getResponse();
             $response->setStatusCode(201);
             return $newMessage;
