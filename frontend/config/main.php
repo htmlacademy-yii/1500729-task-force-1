@@ -68,7 +68,7 @@ return [
         'formatter' => [
             'class' => 'yii\i18n\Formatter',
             'defaultTimeZone' => 'Europe/Moscow',
-            'timeZone' => 'GMT+3',
+            'timeZone' => 'UTC',
         ]
     ],
     'on beforeAction' => function() {

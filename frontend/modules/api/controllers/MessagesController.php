@@ -4,10 +4,13 @@ namespace frontend\modules\api\controllers;
 
 use frontend\models\Messages;
 use JsonSchema\Exception\JsonDecodingException;
+use yii\base\InvalidArgumentException;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\debug\models\timeline\DataProvider;
 use yii\rest\ActiveController;
 use yii\web\Controller;
+use yii\helpers\Json;
 
 class MessagesController extends ActiveController
 {
@@ -47,8 +50,8 @@ class MessagesController extends ActiveController
     public function actionCreate()
     {
         try {
-            $body = json_decode(\Yii::$app->request->getRawBody());
-        } catch (JsonDecodingException $e) {
+            $body = Json::decode(\Yii::$app->request->getRawBody(), false);
+        } catch (InvalidArgumentException $e) {
             throw $e;
         }
 
