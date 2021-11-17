@@ -30,7 +30,11 @@ $stars = round($user->calculateStars($user->id),2);
                                 count($reviews))  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
+                        <?php if ((new \DateTime('- 30 minutes'))->format('Y-m-d H:i:s') <= $user->dt_last_activity): ?>
+                        <span>Онлайн</span>
+                        <?php else: ?>
                         <span>Был на сайте <?= Yii::$app->formatter->format($user->dt_last_activity, 'relativeTime')?></span>
+                        <?php endif; ?>
                         <a href="#"><b></b></a>
                     </div>
                 </div>

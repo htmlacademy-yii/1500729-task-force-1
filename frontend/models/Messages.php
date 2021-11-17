@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use phpDocumentor\Reflection\Types\True_;
 use Yii;
 
 /**
@@ -14,6 +15,7 @@ use Yii;
  * @property int $sender_id
  * @property int $recipient_id
  * @property int|null $message_read
+ * @property int|null $is_mine
  *
  * @property Tasks $task
  * @property Users $sender
@@ -24,6 +26,7 @@ class Messages extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $is_mine;
     public static function tableName()
     {
         return 'messages';
@@ -37,8 +40,8 @@ class Messages extends \yii\db\ActiveRecord
         return [
             [['content', 'task_id', 'sender_id', 'recipient_id'], 'required'],
             [['content'], 'string'],
-            [['dt_add'], 'safe'],
-            [['task_id', 'sender_id', 'recipient_id', 'message_read'], 'integer'],
+            [['dt_add', 'is_mine'], 'safe'],
+            [['task_id', 'sender_id', 'recipient_id', 'message_read', 'is_mine'], 'integer'],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],
             [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['sender_id' => 'id']],
             [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['recipient_id' => 'id']],
@@ -58,8 +61,18 @@ class Messages extends \yii\db\ActiveRecord
             'sender_id' => 'Sender ID',
             'recipient_id' => 'Recipient ID',
             'message_read' => 'Message Read',
+
         ];
     }
+
+    public function fields()
+    {
+        $field = parent::fields();
+        $field[] = 'is_mine';
+        return $field;
+    }
+
+
 
     /**
      * Gets query for [[Task]].
@@ -89,5 +102,13 @@ class Messages extends \yii\db\ActiveRecord
     public function getRecipient()
     {
         return $this->hasOne(Users::class, ['id' => 'recipient_id']);
+    }
+
+    public function isMine($user_id) {
+        if ($user_id !== $this->sender_id) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

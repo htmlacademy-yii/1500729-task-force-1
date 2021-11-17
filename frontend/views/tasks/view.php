@@ -166,10 +166,12 @@ $this->registerJs("
                     <?= Html::a('Cмотреть профиль', ['users/view', 'id' => $task->author_id], ['class' => 'link-regular']) ?>
                 </div>
             </div>
+            <?php if($task->executor_id === $user_id || $task->executor_id && $task->author_id === $user_id): ?>
             <div id="chat-container">
                 <!--                    добавьте сюда атрибут task с указанием в нем id текущего задания-->
-                <chat class="connect-desk__chat"></chat>
+                <chat class="connect-desk__chat" task="<?= $task->id ?>" sender="<?= $user_id ?>" recepient="<?= $user_id === $task->author_id ? $task->executor_id : $task->author_id ?>"></chat>
             </div>
+            <?php endif; ?>
         </section>
     </div>
 </main>
