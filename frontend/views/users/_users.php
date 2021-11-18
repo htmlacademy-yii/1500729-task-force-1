@@ -28,7 +28,11 @@ $stars = round($model->calculateStars($model->id),2); ?>
                 <?= Html::encode($model->information)?>
             </p>
         </div>
+        <?php if ((new \DateTime('- 30 minutes'))->format('Y-m-d H:i:s') <= $model->dt_last_activity): ?>
+        <span class="new-task__time">Онлайн</span>
+        <?php else: ?>
         <span class="new-task__time">Был на сайте <?= Yii::$app->formatter->format($model->dt_last_activity, 'relativeTime')?></span>
+        <?php endif; ?>
     </div>
     <div class="link-specialization user__search-link--bottom">
         <?php foreach ($model->executorCategories as $category): ?>

@@ -4,10 +4,14 @@ namespace frontend\modules\api\controllers;
 
 use frontend\models\Messages;
 use frontend\services\MessageService;
+use JsonSchema\Exception\JsonDecodingException;
+use yii\base\InvalidArgumentException;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\debug\models\timeline\DataProvider;
 use yii\rest\ActiveController;
 use yii\web\Controller;
+use yii\helpers\Json;
 
 class MessagesController extends ActiveController
 {
@@ -38,11 +42,7 @@ class MessagesController extends ActiveController
         $messages = $this->prepareDataProvider()->getModels();
         $userId = \Yii::$app->user->getId();
         foreach ($messages as $key => $message) {
-            if ($userId === $message->sender_id) {
-                $message->is_mine = 0;
-            } else {
-                $message->is_mine = 1;
-            }
+            $message->is_mine = $message->isMine($userId);
             $messages[$key] = $message;
         }
         return $messages;
@@ -50,7 +50,12 @@ class MessagesController extends ActiveController
 
     public function actionCreate()
     {
-        $body = json_decode(\Yii::$app->request->getRawBody());
+        try {
+            $body = Json::decode(\Yii::$app->request->getRawBody(), false);
+        } catch (InvalidArgumentException $e) {
+            throw $e;
+        }
+
         $newMessage = new $this->modelClass();
         $newMessage->content = $body->content;
         $newMessage->task_id = $body->task_id;
@@ -63,7 +68,6 @@ class MessagesController extends ActiveController
             $response->setStatusCode(201);
             return $newMessage;
         }
-
     }
 
 }

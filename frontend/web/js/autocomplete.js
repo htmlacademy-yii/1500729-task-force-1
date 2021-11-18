@@ -3,7 +3,7 @@ const autoCompleteJS = new autoComplete({
   data: {
     src: async (query) => {
       try {
-        const sourse = await fetch(`http://taskforce.loc/geo/index?query=${query}`);
+        const sourse = await fetch(`/geo/index?query=${query}`);
         return await sourse.json();
       } catch (error) {
         return error;

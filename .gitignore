@@ -10,6 +10,6 @@ Thumbs.db
 *.lock
 .phpunit.result.cache
 /frontend/web/uploads/*.*
-/composer.phar
 /composer.bat
+/composer.phar
 /composer_2.phar
