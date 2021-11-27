@@ -18,7 +18,7 @@ $stars = round($user->calculateStars($user->id),2);
         <section class="content-view">
             <div class="user__card-wrapper">
                 <div class="user__card">
-                    <img src="<?= $user->avatar->path ?>" width="120" height="120" alt="Аватар пользователя">
+                    <img src="<?= $user->avatar ? $user->avatar->path  : '/img/man-glasses.jpg' ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= Html::encode($user->name) ?></h1>
                         <p>Россия, <?= $user->location->location ?>, <?= mb_substr(Yii::$app->formatter->asRelativeTime($user->birthday), 0, -6, 'UTF-8')?></p>
@@ -87,7 +87,9 @@ $stars = round($user->calculateStars($user->id),2);
                             ['tasks/view', 'id' => $review->task->id],
                             ['class' => 'regular-link'])  ?> </p>
                         <div class="card__review">
-                            <a href="#"><img src="/img/man-glasses.jpg" width="55" height="54"></a>
+                            <?= Html::a(
+                                Html::img([$review->task->author->avatar ? $review->task->author->avatar->path :'/img/man-glasses.jpg'],
+                                    ['width' => "55", 'height' => "55"]), ['users/view', 'id' => $review->task->author->id ]) ?>
                             <div class="feedback-card__reviews-content">
                                 <p class="link-name link"><?= Html::a(Html::encode($review->task->author->name),
                                     ['users/view', 'id' => $review->task->author->id],

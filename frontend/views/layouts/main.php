@@ -138,7 +138,7 @@ if (!Yii::$app->user->isGuest) {
             </div>
             <div class="header__account">
                 <a class="header__account-photo">
-                    <img src="<?= $user->avatar->path ?>"
+                    <img src="<?= $user->avatar ? $user->avatar->path : '/img/man-glasses.jpg' ?>"
                          width="43" height="44"
                          alt="Аватар пользователя">
                 </a>

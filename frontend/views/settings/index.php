@@ -22,7 +22,7 @@ use yii\helpers\ArrayHelper;
                 <div class="account__redaction-section-wrapper">
 
                     <div class="account__redaction-avatar">
-                        <img src="<?= $user->avatar->path ?>" width="156" height="156">
+                        <img src="<?= $user->avatar ? $user->avatar->path : '/img/man-glasses.jpg' ?>" width="156" height="156">
 
                         <?= $form->field($model, 'avatar', [
                             'options' => [
