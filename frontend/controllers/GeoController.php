@@ -32,4 +32,9 @@ class GeoController extends SecuredController
 
         return $this->asJson($data);
     }
+
+    public function actionLocation($location_id) {
+
+        Yii::$app->session->set('location_id', $location_id);
+    }
 }

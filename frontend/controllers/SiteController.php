@@ -83,6 +83,7 @@ class SiteController extends Controller
             if ($loginForm->validate()) {
                 $user = $loginForm->getUser();
                 \Yii::$app->user->login($user);
+                Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
                 return $this->redirect(['tasks/index']);
             }
         }

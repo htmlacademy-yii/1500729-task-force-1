@@ -33,7 +33,7 @@ class Registration extends Model
          ];
      }
 
-     public function getLocations() {
+     public static function getLocations() {
          $locations = Locations::find()->all();
          return ArrayHelper::map($locations, 'id', 'location');
      }

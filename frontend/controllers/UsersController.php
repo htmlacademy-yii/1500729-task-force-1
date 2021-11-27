@@ -23,12 +23,12 @@ class UsersController extends SecuredController
         $users = Users::find()->where(['role' => Users::ROLE_EXECUTOR])
             ->with('executorCategories.category')->with('executeTasks.reviews')
             ->joinWith('executeTasks')
-            ->with('executorCategories')->distinct();
+            ->with('executorCategories')->distinct()->andWhere(['show_profile' => 0]);
 
         if (Yii::$app->request->get()) {
             $users = (new UserFilterService())->filterUsers($users, Yii::$app->request->get(), $model);
         }
-        
+
         $usersProvider = new ActiveDataProvider([
             'query' => $users,
             'pagination' => [
@@ -41,7 +41,7 @@ class UsersController extends SecuredController
     public function actionView($id) {
         $user = Users::find()->where(['users.id' =>$id])->joinWith('location')
             ->joinWith('executeTasks')->with('executorCategories.category')
-            ->with('workPhotos.files')->one();
+            ->one();
         $reviews = Reviews::find()->joinWith('task.author')
             ->where(['executor_id' => $id])->all();
 

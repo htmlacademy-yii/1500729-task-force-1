@@ -77,11 +77,12 @@ class TasksController extends SecuredController
         $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])
             ->orderBy(['dt_add' => SORT_DESC])
             ->with('category')
-            ->with('location')->joinWith('responds');
+            ->with('location')->joinWith('responds')->andWhere(['location_id' => [Yii::$app->session->get('location_id'), NULL]]);
 
         if (Yii::$app->request->get()) {
             $tasks = (new TaskFilterService())->filterTasks($tasks, Yii::$app->request->get(), $model);
         }
+
         $tasksProvider = new ActiveDataProvider([
             'query' => $tasks,
             'pagination' => [

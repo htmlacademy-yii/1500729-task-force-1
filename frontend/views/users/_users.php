@@ -1,5 +1,5 @@
 <?php
-
+/** @var \frontend\models\Users $model */
 use taskforce\app\StarsWidget;
 use taskforce\helpers\PluralHelper;
 use yii\helpers\Html;
@@ -11,7 +11,7 @@ $stars = round($model->calculateStars($model->id),2); ?>
 <div class="content-view__feedback-card user__search-wrapper">
     <div class="feedback-card__top">
         <div class="user__search-icon">
-            <a href="user.html"><img src="/img/man-glasses.jpg" width="65" height="65"></a>
+            <a href="user.html"><img src="<?= $model->avatar->path ?>" width="65" height="65"></a>
             <span><?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
                     count($model->executeTasks)) ?></span>
             <?php foreach ($model->executeTasks as $task) {
@@ -36,7 +36,7 @@ $stars = round($model->calculateStars($model->id),2); ?>
     </div>
     <div class="link-specialization user__search-link--bottom">
         <?php foreach ($model->executorCategories as $category): ?>
-            <a href="browse.html" class="link-regular"><?= $category->category->title ?></a>
+            <?= Html::a($category->category->title, ['users/index', 'category_id' => $category->category->id], ['class' => 'link-regular']) ?>
         <?php endforeach; ?>
     </div>
 </div>

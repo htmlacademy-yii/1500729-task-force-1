@@ -17,6 +17,10 @@ $this->registerJs("var lightbulb = document.getElementsByClassName('header__ligh
 lightbulb.addEventListener('mouseover', function () {
   fetch('/events/index');
 });");
+
+if (!Yii::$app->user->isGuest) {
+    $user = \frontend\models\Users::findOne(Yii::$app->user->id);
+}
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -95,23 +99,38 @@ lightbulb.addEventListener('mouseover', function () {
                     <li class="site-list__item <?= Yii::$app->request->url == '/user' ? 'site-list__item--active' : '' ?>">
                         <?= Html::a('Исполнители', ['users/index'])?>
                     </li>
-                    <li class="site-list__item">
+                    <li class="site-list__item <?= Yii::$app->request->url == '/task/new' ? 'site-list__item--active' : '' ?>">
                         <?= Html::a('Создать задание', ['tasks/create'])?>
                     </li>
-                    <li class="site-list__item">
-                        <a href="account.html">Мой профиль</a>
+                    <li class="site-list__item <?= Yii::$app->request->url == '/user/view' ? 'site-list__item--active' : '' ?>">
+                        <?= Html::a('Мой профиль', ['users/view', 'id' => Yii::$app->user->id]) ?>
                     </li>
                 </ul>
             </div>
             <?php if(Yii::$app->controller->id !== 'registration'): ?>
             <div class="header__town">
-                <select class="multiple-select input town-select" size="1" name="town[]">
-                    <option value="Moscow">Москва</option>
-                    <option selected value="SPB">Санкт-Петербург</option>
-                    <option value="Krasnodar">Краснодар</option>
-                    <option value="Irkutsk">Иркутск</option>
-                    <option value="Vladivostok">Владивосток</option>
-                </select>
+                <?= \kartik\select2\Select2::widget([
+                    'data' => \frontend\models\Registration::getLocations(),
+                    'id' => 'city',
+                    'name' => 'town',
+                    'value' => Yii::$app->session->get('location_id'),
+                    'pluginEvents' => [
+                        "change" => "function() {
+                          var value = $('#city').val();
+                             $.ajax({
+                                 url: '/geo/location',
+                                 type: 'GET',
+                                 data: {location_id: value},
+                                 success: function(){
+			                     location.reload();
+		                         }
+                                 });
+
+                         }"
+                    ]
+                    ]);
+                ?>
+
             </div>
             <div class="header__lightbulb"></div>
             <div class="lightbulb__pop-up">
@@ -119,7 +138,7 @@ lightbulb.addEventListener('mouseover', function () {
             </div>
             <div class="header__account">
                 <a class="header__account-photo">
-                    <img src="/img/user-photo.png"
+                    <img src="<?= $user->avatar->path ?>"
                          width="43" height="44"
                          alt="Аватар пользователя">
                 </a>
@@ -130,10 +149,10 @@ lightbulb.addEventListener('mouseover', function () {
             <div class="account__pop-up">
                 <ul class="account__pop-up-list">
                     <li>
-                        <a href="mylist.html">Мои задания</a>
+                        <?= Html::a('Мои задания', ['my-tasks/index']) ?>
                     </li>
                     <li>
-                        <a href="account.html">Настройки</a>
+                        <?= Html::a('Настройки', ['settings/index'])?>
                     </li>
                     <li>
                         <?= Html::a('Выход', ['site/logout'])?>
@@ -213,6 +232,13 @@ lightbulb.addEventListener('mouseover', function () {
 <?php $this->endBody() ?>
 <script>
     var dropzone = new Dropzone("div.create__file", {url:"/tasks/upload", paramName: "files"});
+</script>
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    var dropzone = new Dropzone(".dropzone", {url: window.location.href, maxFiles: 6, uploadMultiple: true,
+        acceptedFiles: 'image/*', previewTemplate: '<a href="#"><img data-dz-thumbnail alt="Фото работы"></a>'});
 </script>
 </body>
 </html>

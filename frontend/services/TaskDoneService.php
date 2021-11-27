@@ -66,18 +66,23 @@ class TaskDoneService
         }
     }
 
-    private function sendNotification($taskId, $recipientId) {
+    private function sendNotification($taskId, $recipientId)
+    {
         $notification = new Notifications();
         $notification->task_id = $taskId;
         $notification->recipient_id = $recipientId;
         $notification->type = 'close';
         if ($notification->validate()) {
             $notification->save();
-            $this->sendEmail($notification);
+            if ($notification->recipient->notice_new_review == 1) {
+                $this->sendEmail($notification);
+            }
 
         }
     }
-    private function sendEmail($notification) {
+
+    private function sendEmail($notification)
+    {
         Yii::$app->mailer->compose('_done', ['notification' => $notification])
             ->setFrom(Yii::$app->params['adminEmail'])
             ->setTo($notification->recipient->email)

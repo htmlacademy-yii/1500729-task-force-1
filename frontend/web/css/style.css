@@ -423,6 +423,7 @@ footer {
 
 .new-task__card {
   font-family: "Myriad Pro", sans-serif;
+  box-sizing: content-box !important;
   font-weight: 400;
   font-size: 14px;
   border-top: 1px solid #ececec;
@@ -1743,12 +1744,15 @@ footer {
 
 .my-list__wrapper {
   width: 690px;
+  box-sizing: content-box !important;
   padding-left: 30px;
   padding-right: 30px;
   padding-bottom: 30px;
   margin-right: 0; }
 
 .my-list {
+  width: 750px;
+  box-sizing: content-box;
   margin-right: 0;
   background-color: #ffffff; }
 
@@ -1764,6 +1768,18 @@ footer {
 
 .new-status {
   background-color: #ff7f50; }
+
+.work-status {
+  background-color: #274bdb;
+}
+
+.failed-status {
+  background-color: #ac2925;
+}
+
+.cancel-status {
+  background-color: #f5e79e;
+}
 
 .my-list__bottom {
   display: -webkit-box;
@@ -1957,7 +1973,7 @@ footer {
   padding-right: 50px;
   padding-bottom: 20px;
   background-color: #ffffff;
-  width: 1000px; }
+  width: 1100px; }
 
 .account__redaction-avatar {
   display: -webkit-box;
@@ -2619,4 +2635,5 @@ footer {
 
 .has-error span {
   color: #FF116E; }
+
 /*# sourceMappingURL=style.css.map */

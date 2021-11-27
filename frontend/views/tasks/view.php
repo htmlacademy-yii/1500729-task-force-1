@@ -152,7 +152,7 @@ $this->registerJs("
                 <div class="profile-mini__wrapper">
                     <h3>Заказчик</h3>
                     <div class="profile-mini__top">
-                        <img src="/img/man-brune.jpg" width="62" height="62" alt="Аватар заказчика">
+                        <img src="<?= $task->author->avatar->path ?>" width="62" height="62" alt="Аватар заказчика">
                         <div class="profile-mini__name five-stars__rate">
                             <p><?= $task->author->name ?></p>
                         </div>

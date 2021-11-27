@@ -3,20 +3,26 @@
 namespace frontend\services;
 
 use frontend\models\Notifications;
+use frontend\models\Users;
 use Yii;
 
 class ChooseService
 {
-    public function sendNotification($taskId, $recipientId) {
+    public function sendNotification($taskId, $recipientId)
+    {
+        $recipient = Users::findOne($recipientId);
         try {
             $notification = $this->newNotification($taskId, $recipientId);
-            $this->sendEmail($notification);
+            if ($recipient->notice_new_action == 1) {
+                $this->sendEmail($notification);
+            }
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    private function newNotification($taskId, $recipientId) {
+    private function newNotification($taskId, $recipientId)
+    {
         $notification = new Notifications();
         $notification->task_id = $taskId;
         $notification->recipient_id = $recipientId;
@@ -26,6 +32,7 @@ class ChooseService
             return $notification;
         }
     }
+
     private function sendEmail($notification)
     {
         Yii::$app->mailer->compose('_choose', ['notification' => $notification])
