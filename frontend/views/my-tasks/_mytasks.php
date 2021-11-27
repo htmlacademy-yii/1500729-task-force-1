@@ -7,6 +7,8 @@ use yii\helpers\Html;
 if($model->executor_id) {
 $stars = round($model->executor->calculateStars($model->executor_id),2);
 }
+
+$getStatus = $model->getStatus();
 ?>
 
 
@@ -21,7 +23,7 @@ $stars = round($model->executor->calculateStars($model->executor_id),2);
             ['class' => 'new-task__type link-regular']) ?>
     </div>
 
-    <div class="task-status <?= array_key_first($model->getStatus()) ?>-status"><?= array_shift($model->getStatus()) ?></div>
+    <div class="task-status <?= array_key_first($getStatus) ?>-status"><?= array_shift($getStatus) ?></div>
     <p class="new-task_description">
         <?= $model->description ?>
     </p>
