@@ -51,7 +51,8 @@ class TaskCreateService
         return $task_file;
     }
 
-    private function createTask(TaskForm $taskForm) {
+    private function createTask(TaskForm $taskForm)
+    {
         $author = \Yii::$app->user->identity;
         $task = new Tasks();
         $task->title = $taskForm->title;
@@ -68,8 +69,7 @@ class TaskCreateService
             $task->longitude = (float)$format_coordinates[1];
             $task->location_id = $author->location_id;
         }
-        if($task->save()) {
+        $task->save();
         return $task->id;
-        }
     }
 }
