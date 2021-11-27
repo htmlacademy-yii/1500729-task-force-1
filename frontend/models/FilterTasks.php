@@ -51,8 +51,8 @@ class FilterTasks extends Model
 
     public function getRemoteTasks()
     {
-        $null = new Expression('NULL');
-        return ['IN', 'location_id', $null];
+
+        return ['location_id' => NULL];
     }
 
     public function getPeriod() {

@@ -6,6 +6,7 @@
 /* @var $model \frontend\models\Responds */
 /* @var $review \frontend\models\Reviews */
 /** @var int $user_id */
+
 /** @var int $countAuthorTasks */
 
 use frontend\models\Tasks;
@@ -20,7 +21,7 @@ use yii\widgets\ActiveForm;
 
 $this->registerJsFile(
     'https://api-maps.yandex.ru/2.1/?apikey=' . Yii::$app->params['yandexGeocoder'] . '&lang=ru_RU',
-      ['position' => \yii\web\View::POS_HEAD]);
+    ['position' => \yii\web\View::POS_HEAD]);
 $this->registerJs("
                                 ymaps.ready(init);
                                 function init(){
@@ -73,23 +74,23 @@ $this->registerJs("
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
-                    <?php if ($task->address):?>
-                    <div class="content-view__location">
-                        <h3 class="content-view__h3">Расположение</h3>
-                        <div class="content-view__location-wrapper">
-                            <div class="content-view__map">
-                                <div id="map" style="width: 361px; height: 292px"></div>
-                            </div>
-
-                            <?php if ($task->address): ?>
-                                <div class="content-view__address">
-                                    <span class="address__town"></span><br>
-                                    <span><?= Html::encode($task->address) ?></span>
-                                    <p>Вход под арку, код домофона 1122</p>
+                    <?php if ($task->address): ?>
+                        <div class="content-view__location">
+                            <h3 class="content-view__h3">Расположение</h3>
+                            <div class="content-view__location-wrapper">
+                                <div class="content-view__map">
+                                    <div id="map" style="width: 361px; height: 292px"></div>
                                 </div>
-                            <?php endif; ?>
+
+                                <?php if ($task->address): ?>
+                                    <div class="content-view__address">
+                                        <span class="address__town"></span><br>
+                                        <span><?= Html::encode($task->address) ?></span>
+                                        <p>Вход под арку, код домофона 1122</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                    </div>
                     <?php endif; ?>
                 </div>
                 <?php if (Yii::$app->user->identity->role === Users::ROLE_EXECUTOR || $task->author_id === $user_id): ?>
@@ -112,7 +113,11 @@ $this->registerJs("
                             <?php if ($respond->executor_id === $user_id || $task->author_id === $user_id): ?>
                                 <div class="content-view__feedback-card">
                                     <div class="feedback-card__top">
-                                        <a href="user.html"><img src="/img/man-glasses.jpg" width="55" height="55"></a>
+                                        <?=
+                                        Html::a(Html::img($respond->executor->avatar ?
+                                            $respond->executor->avatar->path : '/img/man-glasses.jpg',
+                                            ['width' => "55", 'height' => "55"]), ['users/view', 'id' => $respond->executor->id])
+                                        ?>
                                         <div class="feedback-card__top--name">
                                             <p><?= Html::a(Html::encode($respond->executor->name),
                                                     ['users/view', 'id' => $respond->executor->id], ['class' => 'link-regular']) ?></p>
@@ -136,8 +141,8 @@ $this->registerJs("
                                                 ['tasks/choose', 'taskId' => $task->id, 'executorId' => $respond->executor_id],
                                                 ['class' => "button__small-color response-button button", 'type' => "button"]) ?>
                                             <?= Html::a('Отказать',
-                                            ['tasks/decline', 'respondId' => $respond->id],
-                                            ['class' => 'button__small-color refusal-button button', 'type' => "button"]) ?>
+                                                ['tasks/decline', 'respondId' => $respond->id],
+                                                ['class' => 'button__small-color refusal-button button', 'type' => "button"]) ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -152,7 +157,8 @@ $this->registerJs("
                 <div class="profile-mini__wrapper">
                     <h3>Заказчик</h3>
                     <div class="profile-mini__top">
-                        <img src="/img/man-brune.jpg" width="62" height="62" alt="Аватар заказчика">
+                        <img src="<?= $task->author->avatar ? $task->author->avatar->path : '/img/man-glasses.jpg' ?>"
+                             width="62" height="62" alt="Аватар заказчика">
                         <div class="profile-mini__name five-stars__rate">
                             <p><?= $task->author->name ?></p>
                         </div>
@@ -166,19 +172,20 @@ $this->registerJs("
                     <?= Html::a('Cмотреть профиль', ['users/view', 'id' => $task->author_id], ['class' => 'link-regular']) ?>
                 </div>
             </div>
-            <?php if($task->executor_id === $user_id || $task->executor_id && $task->author_id === $user_id): ?>
-            <div id="chat-container">
-                <!--                    добавьте сюда атрибут task с указанием в нем id текущего задания-->
-                <chat class="connect-desk__chat" task="<?= $task->id ?>" sender="<?= $user_id ?>" recepient="<?= $user_id === $task->author_id ? $task->executor_id : $task->author_id ?>"></chat>
-            </div>
+            <?php if ($task->executor_id === $user_id || $task->executor_id && $task->author_id === $user_id): ?>
+                <div id="chat-container">
+                    <!--                    добавьте сюда атрибут task с указанием в нем id текущего задания-->
+                    <chat class="connect-desk__chat" task="<?= $task->id ?>" sender="<?= $user_id ?>"
+                          recepient="<?= $user_id === $task->author_id ? $task->executor_id : $task->author_id ?>"></chat>
+                </div>
             <?php endif; ?>
         </section>
     </div>
 </main>
 
-    <?php if (!$respondAuthor): ?>
-<section class="modal response-form form-modal" id="response-form">
-    <h2>Отклик на задание</h2>
+<?php if (!$respondAuthor): ?>
+    <section class="modal response-form form-modal" id="response-form">
+        <h2>Отклик на задание</h2>
         <?php $form = ActiveForm::begin([
             'method' => 'post',
             'action' => ['tasks/view', 'id' => $task->id],
@@ -198,9 +205,8 @@ $this->registerJs("
         <?= Html::submitButton('Отправить', ['class' => 'button modal-button']) ?>
         <?php ActiveForm::end() ?>
         <button class="form-modal-close" type="button">Закрыть</button>
-</section>
-    <?php endif; ?>
-
+    </section>
+<?php endif; ?>
 
 
 <section class="modal completion-form form-modal" id="request-form">

@@ -15,6 +15,7 @@ use frontend\models\Responds;
 use frontend\models\TaskFiles;
 use frontend\models\Tasks;
 use frontend\models\Users;
+use frontend\services\ChooseService;
 use frontend\services\TaskCreateService;
 use frontend\services\TaskDoneService;
 use frontend\services\TaskFilterService;
@@ -76,11 +77,12 @@ class TasksController extends SecuredController
         $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])
             ->orderBy(['dt_add' => SORT_DESC])
             ->with('category')
-            ->with('location')->joinWith('responds');
+            ->with('location')->joinWith('responds')->andWhere(['location_id' => [Yii::$app->session->get('location_id'), NULL]]);
 
         if (Yii::$app->request->get()) {
             $tasks = (new TaskFilterService())->filterTasks($tasks, Yii::$app->request->get(), $model);
         }
+
         $tasksProvider = new ActiveDataProvider([
             'query' => $tasks,
             'pagination' => [
@@ -168,6 +170,7 @@ class TasksController extends SecuredController
             $task->status = Task::STATUS_IN_WORK;
             $task->executor_id = $executorId;
             $task->save();
+            (new ChooseService())->sendNotification($taskId, $executorId);
             return $this->goHome();
         } else {
             throw new BadRequestHttpException($chooseExecutor->getFirstError('user_id'));

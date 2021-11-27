@@ -33,6 +33,7 @@ use Yii;
  * @property Locations $city
  * @property Categories $category
  * @property Locations $location
+ * @property Notifications[] $notifications
  */
 class Tasks extends \yii\db\ActiveRecord
 {
@@ -41,6 +42,7 @@ class Tasks extends \yii\db\ActiveRecord
     const STATUS_IN_WORK = 2;
     const STATUS_DONE = 3;
     const STATUS_FAILED = 4;
+    const STATUS_OVERDUE = 5;
     /**
      * {@inheritdoc}
      */
@@ -185,6 +187,11 @@ class Tasks extends \yii\db\ActiveRecord
         return $this->hasOne(Locations::class, ['id' => 'location_id']);
     }
 
+    public function getNotifications()
+    {
+        return $this->hasMany(Notifications::class, ['task_id' => 'id']);
+    }
+
     public function getActions(int $user_id, ?object $respond_id) {
           $activeActions = [];
 
@@ -210,5 +217,26 @@ class Tasks extends \yii\db\ActiveRecord
         } else {
             return false;
         }
+     }
+
+     public function getStatus():array {
+        $data = [
+            self::STATUS_NEW => [
+                'new' => 'Новый'
+            ],
+            self::STATUS_DONE => [
+                'done' => 'Завершено'
+            ],
+            self::STATUS_IN_WORK => [
+                'work' => 'В работе'
+            ],
+            self::STATUS_FAILED => [
+                'failed' => 'Отменен'
+                ],
+            self::STATUS_CANCEL => [
+                'canсel' => 'Отменен'
+            ]
+        ];
+        return $data[$this->status];
      }
 }

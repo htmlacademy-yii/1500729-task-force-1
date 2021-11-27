@@ -25,7 +25,7 @@ class TaskForm extends Model
             ['description', 'required'],
             ['category_id', 'required'],
             [['budget'], 'integer', 'message' => 'Бюджет должен быть целым числом'],
-            ['due_date', 'date', 'format' => 'YYYY-MM-DD', 'message' => 'Дата исполнения должна быть в формате ГГГГ-ММ-ДД'],
+            ['due_date', 'date', 'format' => 'php:Y-m-d', 'message' => 'Дата исполнения должна быть в формате ГГГГ-ММ-ДД'],
             ['title', 'string'],
             ['description', 'string'],
             ['address', 'string'],

@@ -29,7 +29,7 @@ class TaskFilterService
                 return $task->andFilterWhere($model->getTasksWithoutResponds());
             }
             if ($model->options && ArrayHelper::isIn(2, $model->options)) {
-                return $task->andFilterWhere($model->getRemoteTasks());
+                return $task->andWhere($model->getRemoteTasks());
             }
             if ($model->period) {
                 return $task->andFilterWhere($model->getPeriod());

@@ -2,6 +2,7 @@
 
 namespace frontend\services;
 
+use frontend\models\Notifications;
 use frontend\models\Reviews;
 use frontend\models\Tasks;
 use Yii;
@@ -19,6 +20,7 @@ class TaskDoneService
             $this->createReview($data, $task);
             $this->updateTask($data, $task);
             $this->updateCounters($task);
+            $this->sendNotification($task->id, $task->executor_id);
             $transaction->commit();
         } catch (\Exception $e) {
             $transaction->rollBack();
@@ -62,5 +64,29 @@ class TaskDoneService
                 $task->executor->save();
             }
         }
+    }
+
+    private function sendNotification($taskId, $recipientId)
+    {
+        $notification = new Notifications();
+        $notification->task_id = $taskId;
+        $notification->recipient_id = $recipientId;
+        $notification->type = 'close';
+        if ($notification->validate()) {
+            $notification->save();
+            if ($notification->recipient->notice_new_review == 1) {
+                $this->sendEmail($notification);
+            }
+
+        }
+    }
+
+    private function sendEmail($notification)
+    {
+        Yii::$app->mailer->compose('_done', ['notification' => $notification])
+            ->setFrom(Yii::$app->params['adminEmail'])
+            ->setTo($notification->recipient->email)
+            ->setSubject('Задание завершено')
+            ->send();
     }
 }

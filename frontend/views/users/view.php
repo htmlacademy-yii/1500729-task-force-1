@@ -3,6 +3,7 @@
 /* @var $user \frontend\models\Users */
 /* @var $reviews \frontend\models\Reviews */
 
+use frontend\models\Tasks;
 use taskforce\app\RatioWidget;
 use taskforce\app\StarsWidget;
 use yii\helpers\Html;
@@ -17,7 +18,7 @@ $stars = round($user->calculateStars($user->id),2);
         <section class="content-view">
             <div class="user__card-wrapper">
                 <div class="user__card">
-                    <img src="/img/man-hat.png" width="120" height="120" alt="Аватар пользователя">
+                    <img src="<?= $user->avatar ? $user->avatar->path  : '/img/man-glasses.jpg' ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= Html::encode($user->name) ?></h1>
                         <p>Россия, <?= $user->location->location ?>, <?= mb_substr(Yii::$app->formatter->asRelativeTime($user->birthday), 0, -6, 'UTF-8')?></p>
@@ -49,6 +50,13 @@ $stars = round($user->calculateStars($user->id),2);
                                 <?= Html::a(Html::encode($category->category->title),['tasks/index', 'category_id' => $category->category->id], ['class' => 'link-regular'] )?>
                             <?php endforeach; ?>
                         </div>
+                        <?php
+                            if ($user->show_contacts == 1
+                                 && Tasks::find()->where(['executor_id' => $user->id])->
+                        andWhere(['author_id' => Yii::$app->user->id])->one()
+                        || $user->show_contacts == 0
+                        || $user->id == Yii::$app->user->id):
+                        ?>
                         <h3 class="content-view__h3">Контакты</h3>
                         <div class="user__card-link">
                             <?= Html::a(Html::encode($user->phone),'tel:'.$user->phone, ['class' => 'user__card-link--tel link-regular']) ?>
@@ -56,11 +64,16 @@ $stars = round($user->calculateStars($user->id),2);
                             <?= Html::a(Html::encode($user->skype), 'skype:'.$user->skype.'?call', ['class' => 'user__card-link--skype link-regular']) ?>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <div class="user__card-photo">
                         <h3 class="content-view__h3">Фото работ</h3>
-                        <a href="#"><img src="/img/rome-photo.jpg" width="85" height="86" alt="Фото работы"></a>
-                        <a href="#"><img src="/img/smartphone-photo.png" width="85" height="86" alt="Фото работы"></a>
-                        <a href="#"><img src="/img/dotonbori-photo.png" width="85" height="86" alt="Фото работы"></a>
+
+                        <?php if ($user->workPhotos): ?>
+                        <?php foreach ($user->workPhotos as $photo): ?>
+                        <?= Html::a(Html::img($photo->file->path, ['width'=>"85", 'height'=>"86", 'alt'=>"Фото работы"]), $photo->file->path,
+                            ['target' => "_blank"] ) ?>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -74,7 +87,9 @@ $stars = round($user->calculateStars($user->id),2);
                             ['tasks/view', 'id' => $review->task->id],
                             ['class' => 'regular-link'])  ?> </p>
                         <div class="card__review">
-                            <a href="#"><img src="/img/man-glasses.jpg" width="55" height="54"></a>
+                            <?= Html::a(
+                                Html::img([$review->task->author->avatar ? $review->task->author->avatar->path :'/img/man-glasses.jpg'],
+                                    ['width' => "55", 'height' => "55"]), ['users/view', 'id' => $review->task->author->id ]) ?>
                             <div class="feedback-card__reviews-content">
                                 <p class="link-name link"><?= Html::a(Html::encode($review->task->author->name),
                                     ['users/view', 'id' => $review->task->author->id],
