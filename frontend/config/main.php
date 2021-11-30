@@ -31,8 +31,8 @@ return [
             'clients' => [
                 'vkontakte' => [
                     'class' => 'yii\authclient\clients\VKontakte',
-                    'clientId' => 8013503,
-                    'clientSecret' => 'rJHNEKjVZ3VWUVlryzZB',
+                    'clientId' => $params['vk_id'],
+                    'clientSecret' => $params['vk_secret_key'],
                     'scope' => 'email'
                 ]
             ]
