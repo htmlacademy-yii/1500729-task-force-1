@@ -60,7 +60,7 @@ class FilterUsers extends Model
 
     public function getFavouriteUsers()
     {
-        $favouritesUsers = Favourites::find()->select('executor_id')->where(['author_id' => 3])->asArray();
+        $favouritesUsers = Favourites::find()->select('executor_id')->where(['author_id' => Yii::$app->user->id])->asArray();
         return ['IN', 'users.id', $favouritesUsers];
     }
 

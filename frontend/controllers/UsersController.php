@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use frontend\models\Categories;
+use frontend\models\Favourites;
 use frontend\models\FilterUsers;
 use frontend\models\Responds;
 use frontend\models\Reviews;
@@ -10,6 +11,7 @@ use frontend\models\Users;
 use frontend\services\UserFilterService;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -50,5 +52,16 @@ class UsersController extends SecuredController
         }
 
         return $this->render('view', ['user' => $user, 'reviews' => $reviews]);
+    }
+
+    public function actionFavourite($executor_id) {
+        $favourite = new Favourites();
+        $favourite->executor_id = $executor_id;
+        $favourite->author_id = Yii::$app->user->id;
+        if (!$favourite->save()) {
+            throw new Exception('Не удалось добавить пользователя в Избранное', 500);
+        } else {
+            $this->redirect(['users/view', 'id' => $executor_id]);
+        }
     }
 }
