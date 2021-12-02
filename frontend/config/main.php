@@ -26,6 +26,17 @@ return [
             ]
 
         ],
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'vkontakte' => [
+                    'class' => 'yii\authclient\clients\VKontakte',
+                    'clientId' => $params['vk_id'],
+                    'clientSecret' => $params['vk_secret_key'],
+                    'scope' => 'email'
+                ]
+            ]
+        ],
         'user' => [
             'identityClass' => 'frontend\models\Users',
             'enableAutoLogin' => true,

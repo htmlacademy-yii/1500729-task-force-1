@@ -32,7 +32,7 @@ class Files extends \yii\db\ActiveRecord
     {
         return [
             [['path'], 'required'],
-            [['path'], 'string', 'max' => 128],
+            [['path'], 'string', 'max' => 500],
             [['name'], 'string', 'max' => 128]
         ];
     }

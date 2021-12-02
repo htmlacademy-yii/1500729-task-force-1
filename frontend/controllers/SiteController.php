@@ -1,10 +1,22 @@
 <?php
+
 namespace frontend\controllers;
 
+/** @var $client VKontakte */
+
+use common\models\User;
+use frontend\models\Auth;
+use frontend\models\Files;
+use frontend\models\Locations;
 use frontend\models\ResendVerificationEmailForm;
+use frontend\models\Users;
 use frontend\models\VerifyEmailForm;
+use frontend\services\AuthService;
 use Yii;
+use yii\authclient\clients\VKontakte;
 use yii\base\InvalidArgumentException;
+use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -45,9 +57,7 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+
     public function actions()
     {
         return [
@@ -58,14 +68,43 @@ class SiteController extends Controller
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'onAuthSuccess'],
+            ]
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
+    public function onAuthSuccess($client)
+    {
+        $attributes = $client->getUserAttributes();
+
+        $auth = Auth::find()->where(['source' => $client->getId(),
+            'source_id' => $attributes['id']])->one();
+
+        if (Yii::$app->user->isGuest) {
+            if ($auth) {
+                $user = $auth->user;
+                Yii::$app->user->login($user);
+                Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
+                return $this->redirect(['tasks/index']);
+            } else {
+                if (isset($attributes['email']) && Users::find()->where(['email' => $attributes['email']])->exists()) {
+                    throw new \yii\base\Exception('Пользователь с таким Email уже зарегистрирован');
+                } else {
+                    $user = (new AuthService($attributes, $client))->execute();
+                    Yii::$app->user->login($user);
+                    Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
+                    return $this->redirect(['tasks/index']);
+                }
+
+            }
+
+        }
+    }
+
+
+
     public function actionIndex()
     {
         if (!Yii::$app->user->isGuest) {
@@ -91,18 +130,13 @@ class SiteController extends Controller
     }
 
 
-    /**
-     * Logs out the current user.
-     *
-     * @return mixed
-     */
+
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
-
 
 
 }

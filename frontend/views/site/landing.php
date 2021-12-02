@@ -57,10 +57,17 @@ AppAsset::register($this);
                <p>Работа там, где ты!</p>
             </div>
             <div class="header__account--index">
+
                 <a href="#" class="header__account-enter open-modal" data-for="enter-form">
+
                     <span>Вход</span></a>
 или
                 <?= Html::a('Регистрация', ['registration/index'], ['class' => 'header__account-registration'])?>
+                <?= yii\authclient\widgets\AuthChoice::widget([
+                    'baseAuthUrl' => ['site/auth'],
+                    'popupMode' => false,
+                ]) ?>
+
             </div>
         </div>
     </header>
