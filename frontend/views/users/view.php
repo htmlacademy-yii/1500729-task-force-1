@@ -3,7 +3,7 @@
 /* @var $user \frontend\models\Users */
 /* @var $reviews \frontend\models\Reviews */
 
-use frontend\models\Tasks;
+use frontend\models\Favourites;use frontend\models\Tasks;
 use taskforce\app\RatioWidget;
 use taskforce\app\StarsWidget;
 use yii\helpers\Html;
@@ -30,13 +30,16 @@ $stars = round($user->calculateStars($user->id),2);
                                 $user->done_tasks) ?></b><b class="done-review">Получил <?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
                                 count($reviews))  ?></b>
                     </div>
-                    <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
+                    <div class="content-view__headline user__card-bookmark user__card-bookmark<?=
+                    Favourites::find()->where(['executor_id' => $user->id, 'author_id' => Yii::$app->user->id])->one()
+                     ? '--current' : ''?>">
                         <?php if ((new \DateTime('- 30 minutes'))->format('Y-m-d H:i:s') <= $user->dt_last_activity): ?>
                         <span>Онлайн</span>
                         <?php else: ?>
                         <span>Был на сайте <?= Yii::$app->formatter->format($user->dt_last_activity, 'relativeTime')?></span>
                         <?php endif; ?>
-                        <a href="#"><b></b></a>
+
+                        <?= Html::a("<b></b>", ['users/favourite', 'executor_id' => $user->id]) ?>
                     </div>
                 </div>
                 <div class="content-view__description">

@@ -21,7 +21,8 @@
         "kartik-v/yii2-widget-select2": "dev-master",
         "guzzlehttp/guzzle": "^7.3",
         "ext-json": "*",
-        "yiisoft/yii2-authclient": "*"
+        "yiisoft/yii2-authclient": "*",
+        "yiisoft/yii2-redis": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
