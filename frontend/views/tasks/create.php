@@ -8,6 +8,7 @@
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
 $this->registerJsFile("https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.min.js");
 $this->registerJsFile("/js/autocomplete.js");
 ?>
@@ -54,8 +55,10 @@ $this->registerJsFile("/js/autocomplete.js");
                 <div class="field-container">
 
                     <?= $form->field($taskForm, 'category_id')
-                        ->dropDownList(ArrayHelper::map($categories, 'id', 'title'),
-                            ['class' => 'multiple-select input multiple-select-big'])
+                        ->dropDownList(
+                            ArrayHelper::map($categories, 'id', 'title'),
+                            ['class' => 'multiple-select input multiple-select-big']
+                        )
                         ->label('Категория')->hint('Выберите категорию')
                     ?>
                 </div>
@@ -92,8 +95,10 @@ $this->registerJsFile("/js/autocomplete.js");
 
 
               <div class="field-container create__price-time--wrapper">
-                  <?= $form->field($taskForm, 'due_date',
-                      )
+                  <?= $form->field(
+                                $taskForm,
+                                'due_date',
+                            )
                       ->textInput(['class'=> 'input-middle input input-date', 'placeholder' => '2021-11-10'])
                       ->label('Сроки исполнения')
                       ->hint('Укажите крайний срок исполнения')?>

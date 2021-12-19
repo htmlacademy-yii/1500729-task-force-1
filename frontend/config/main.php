@@ -1,4 +1,5 @@
 <?php
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -16,7 +17,7 @@ return [
     'modules' => [
         'api' => [
             'class' => 'frontend\modules\api\Module'
-        ]
+        ],
     ],
     'components' => [
         'request' => [
@@ -82,7 +83,7 @@ return [
             'timeZone' => 'UTC',
         ]
     ],
-    'on beforeAction' => function() {
+    'on beforeAction' => function () {
         if (Yii::$app->user->identity) {
             $user = \frontend\models\Users::findOne(Yii::$app->user->id);
             $user->dt_last_activity = date('Y-m-d H:i:s');

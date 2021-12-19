@@ -2,19 +2,27 @@
 
 namespace frontend\services;
 
-use frontend\models\Categories;
 use frontend\models\ExecutorCategories;
 use frontend\models\Files;
 use frontend\models\SettingsForm;
 use frontend\models\Users;
 use frontend\models\WorkPhotos;
+use Throwable;
 use Yii;
+use yii\db\Exception;
+use yii\db\StaleObjectException;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 
 class SettingsFormService
 {
-    public function execute(SettingsForm $settings, Users $user, array $categories)
+    /**
+     * @param SettingsForm $settings
+     * @param Users $user
+     * @param array $categories
+     * @throws Exception
+     */
+    public function execute(SettingsForm $settings, Users $user, array $categories): void
     {
         $executor_categories = ExecutorCategories::find()->where(['user_id' => $user->id])->asArray()->all();
         $settings->avatar = UploadedFile::getInstance($settings, 'avatar');
@@ -47,6 +55,10 @@ class SettingsFormService
         }
     }
 
+    /**
+     * @throws Throwable
+     * @throws StaleObjectException
+     */
     private function uploadFiles(Users $user)
     {
         $files = Yii::$app->session->get('photos');
@@ -69,9 +81,13 @@ class SettingsFormService
         }
 
         Yii::$app->session->remove('photos');
-
     }
 
+    /**
+     * @param Users $user
+     * @param SettingsForm $settings
+     * @throws \yii\base\Exception
+     */
     private function uploadSettings(Users $user, SettingsForm $settings)
     {
         $user->email = $settings->email;
@@ -91,11 +107,15 @@ class SettingsFormService
         $user->show_contacts = $settings->show_contacts;
 
         if ($settings->password) {
-            $user->password = \Yii::$app->getSecurity()->generatePasswordHash($settings->password);
+            $user->password = Yii::$app->getSecurity()->generatePasswordHash($settings->password);
         }
     }
 
 
+    /**
+     * @param $avatar
+     * @return int
+     */
     private function uploadAvatar($avatar): int
     {
         $filename = uniqid('ava') . '.' . $avatar->getExtension();
@@ -106,6 +126,14 @@ class SettingsFormService
         return $file->id;
     }
 
+    /**
+     * @param Users $user
+     * @param SettingsForm $settings
+     * @param $executor_categories
+     * @param $categories
+     * @throws StaleObjectException
+     * @throws Throwable
+     */
     private function updateCategory(Users $user, SettingsForm $settings, $executor_categories, $categories)
     {
         $user->role = Users::ROLE_EXECUTOR;
@@ -126,6 +154,12 @@ class SettingsFormService
         }
     }
 
+    /**
+     * @param Users $user
+     * @param $executor_categories
+     * @throws StaleObjectException
+     * @throws Throwable
+     */
     private function changeRole(Users $user, $executor_categories)
     {
         $user->role = Users::ROLE_AUTHOR;

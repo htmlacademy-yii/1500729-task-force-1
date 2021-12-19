@@ -19,8 +19,8 @@ use Yii;
  */
 class Notifications extends \yii\db\ActiveRecord
 {
-    const UNREAD = 0;
-    const READ = 1;
+    public const UNREAD = 0;
+    public const READ = 1;
     /**
      * {@inheritdoc}
      */
@@ -79,7 +79,8 @@ class Notifications extends \yii\db\ActiveRecord
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);
     }
 
-    public function getTypes() {
+    public function getTypes()
+    {
         return [
           'message' => 'Новое сообщение в чате ',
             'executor' => 'Выбран исполнитель для ',

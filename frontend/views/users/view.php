@@ -3,14 +3,15 @@
 /* @var $user \frontend\models\Users */
 /* @var $reviews \frontend\models\Reviews */
 
-use frontend\models\Favourites;use frontend\models\Tasks;
+use frontend\models\Favourites;
+use frontend\models\Tasks;
 use taskforce\app\RatioWidget;
 use taskforce\app\StarsWidget;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use taskforce\helpers\PluralHelper;
 
-$stars = round($user->calculateStars($user->id),2);
+$stars = round($user->calculateStars($user->id), 2);
 ?>
 
 <main class="page-main">
@@ -18,17 +19,21 @@ $stars = round($user->calculateStars($user->id),2);
         <section class="content-view">
             <div class="user__card-wrapper">
                 <div class="user__card">
-                    <img src="<?= $user->avatar ? $user->avatar->path  : '/img/man-glasses.jpg' ?>" width="120" height="120" alt="Аватар пользователя">
+                    <img src="<?= $user->avatar ? $user->avatar->path : '/img/man-glasses.jpg' ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= Html::encode($user->name) ?></h1>
-                        <p>Россия, <?= $user->location->location ?>, <?= mb_substr(Yii::$app->formatter->asRelativeTime($user->birthday), 0, -6, 'UTF-8')?></p>
+                        <p>Россия, <?= $user->location->location ?><?= $user->birthday ? ', ' . mb_substr(Yii::$app->formatter->asRelativeTime($user->birthday), 0, -6, 'UTF-8') : ''?></p>
                         <div class="profile-mini__name five-stars__rate">
                             <?= StarsWidget::widget(['stars' => $stars]) ?>
                             <b><?= $stars ?></b>
                         </div>
-                        <b class="done-task">Выполнил <?= PluralHelper::Plural(['заказов', 'заказ', 'заказ', 'заказа', 'заказов', 'заказа'],
-                                $user->done_tasks) ?></b><b class="done-review">Получил <?= PluralHelper::Plural(['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
-                                count($reviews))  ?></b>
+                        <b class="done-task">Выполнил <?= PluralHelper::Plural(
+    ['заказов', 'заказ', 'заказ', 'заказа', 'заказов', 'заказа'],
+    $user->done_tasks
+) ?></b><b class="done-review">Получил <?= PluralHelper::Plural(
+                                    ['отзывов', 'отзыв', 'отзыв', 'отзыва', 'отзывов', 'отзыва'],
+                                    count($reviews)
+                                )  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark<?=
                     Favourites::find()->where(['executor_id' => $user->id, 'author_id' => Yii::$app->user->id])->one()
@@ -50,7 +55,7 @@ $stars = round($user->calculateStars($user->id),2);
                         <h3 class="content-view__h3">Специализации</h3>
                         <div class="link-specialization">
                             <?php foreach ($user->executorCategories as $category): ?>
-                                <?= Html::a(Html::encode($category->category->title),['tasks/index', 'category_id' => $category->category->id], ['class' => 'link-regular'] )?>
+                                <?= Html::a(Html::encode($category->category->title), ['tasks/index', 'category_id' => $category->category->id], ['class' => 'link-regular'])?>
                             <?php endforeach; ?>
                         </div>
                         <?php
@@ -62,7 +67,7 @@ $stars = round($user->calculateStars($user->id),2);
                         ?>
                         <h3 class="content-view__h3">Контакты</h3>
                         <div class="user__card-link">
-                            <?= Html::a(Html::encode($user->phone),'tel:'.$user->phone, ['class' => 'user__card-link--tel link-regular']) ?>
+                            <?= Html::a(Html::encode($user->phone), 'tel:'.$user->phone, ['class' => 'user__card-link--tel link-regular']) ?>
                             <?= Html::mailto($user->email, $user->email, ['class' => "user__card-link--email link-regular"])?>
                             <?= Html::a(Html::encode($user->skype), 'skype:'.$user->skype.'?call', ['class' => 'user__card-link--skype link-regular']) ?>
                         </div>
@@ -73,30 +78,41 @@ $stars = round($user->calculateStars($user->id),2);
 
                         <?php if ($user->workPhotos): ?>
                         <?php foreach ($user->workPhotos as $photo): ?>
-                        <?= Html::a(Html::img($photo->file->path, ['width'=>"85", 'height'=>"86", 'alt'=>"Фото работы"]), $photo->file->path,
-                            ['target' => "_blank"] ) ?>
+                        <?= Html::a(
+                            Html::img($photo->file->path, ['width'=>"85", 'height'=>"86", 'alt'=>"Фото работы"]),
+                            $photo->file->path,
+                            ['target' => "_blank"]
+                        ) ?>
                         <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
-            <?php if($reviews): ?>
+            <?php if ($reviews): ?>
             <div class="content-view__feedback">
                 <h2>Отзывы<span>(<?= count($reviews) ?>)</span></h2>
                 <div class="content-view__feedback-wrapper reviews-wrapper">
                     <?php foreach ($reviews as $review): ?>
                     <div class="feedback-card__reviews">
-                        <p class="link-task link">Задание <?= Html::a('«'.Html::encode($review->task->title).'»',
-                            ['tasks/view', 'id' => $review->task->id],
-                            ['class' => 'regular-link'])  ?> </p>
+                        <p class="link-task link">Задание <?= Html::a(
+                                '«'.Html::encode($review->task->title).'»',
+                                ['tasks/view', 'id' => $review->task->id],
+                                ['class' => 'regular-link']
+                            )  ?> </p>
                         <div class="card__review">
                             <?= Html::a(
-                                Html::img([$review->task->author->avatar ? $review->task->author->avatar->path :'/img/man-glasses.jpg'],
-                                    ['width' => "55", 'height' => "55"]), ['users/view', 'id' => $review->task->author->id ]) ?>
+                                Html::img(
+                                    [$review->task->author->avatar ? $review->task->author->avatar->path : '/img/man-glasses.jpg'],
+                                    ['width' => "55", 'height' => "55"]
+                                ),
+                                ['users/view', 'id' => $review->task->author->id ]
+                            ) ?>
                             <div class="feedback-card__reviews-content">
-                                <p class="link-name link"><?= Html::a(Html::encode($review->task->author->name),
-                                    ['users/view', 'id' => $review->task->author->id],
-                                    ['class' => 'link-regular']) ?>
+                                <p class="link-name link"><?= Html::a(
+                                        Html::encode($review->task->author->name),
+                                        ['users/view', 'id' => $review->task->author->id],
+                                        ['class' => 'link-regular']
+                                    ) ?>
                                 <p class="review-text">
                                     <?= Html::encode($review->content) ?>
                                 </p>

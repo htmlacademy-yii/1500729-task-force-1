@@ -21,7 +21,8 @@ use yii\widgets\ActiveForm;
 
 $this->registerJsFile(
     'https://api-maps.yandex.ru/2.1/?apikey=' . Yii::$app->params['yandexGeocoder'] . '&lang=ru_RU',
-    ['position' => \yii\web\View::POS_HEAD]);
+    ['position' => \yii\web\View::POS_HEAD]
+);
 $this->registerJs("
                                 ymaps.ready(init);
                                 function init(){
@@ -49,9 +50,11 @@ $this->registerJs("
                         <div class="content-view__headline">
                             <h1><?= Html::encode($task->title) ?></h1>
                             <span>Размещено в категории
-                                    <?= Html::a($task->category->title,
-                                        ['tasks/index', 'category_id' => $task->category->id],
-                                        ['class' => 'link-regular']) ?>
+                                    <?= Html::a(
+    $task->category->title,
+    ['tasks/index', 'category_id' => $task->category->id],
+    ['class' => 'link-regular']
+) ?>
                                 <?= Yii::$app->formatter->format($task->dt_add, 'relativeTime') ?></span>
                         </div>
                         <b class="new-task__price new-task__price--<?= $task->category->icon ?> content-view-price"><?= Html::encode($task->budget) ?>
@@ -114,13 +117,18 @@ $this->registerJs("
                                 <div class="content-view__feedback-card">
                                     <div class="feedback-card__top">
                                         <?=
-                                        Html::a(Html::img($respond->executor->avatar ?
+                                        Html::a(Html::img(
+                                            $respond->executor->avatar ?
                                             $respond->executor->avatar->path : '/img/man-glasses.jpg',
-                                            ['width' => "55", 'height' => "55"]), ['users/view', 'id' => $respond->executor->id])
+                                            ['width' => "55", 'height' => "55"]
+                                        ), ['users/view', 'id' => $respond->executor->id])
                                         ?>
                                         <div class="feedback-card__top--name">
-                                            <p><?= Html::a(Html::encode($respond->executor->name),
-                                                    ['users/view', 'id' => $respond->executor->id], ['class' => 'link-regular']) ?></p>
+                                            <p><?= Html::a(
+                                            Html::encode($respond->executor->name),
+                                            ['users/view', 'id' => $respond->executor->id],
+                                            ['class' => 'link-regular']
+                                        ) ?></p>
                                             <?php $stars = Users::calculateStars($respond->executor->id) ?>
                                             <?= StarsWidget::widget(['stars' => $stars]) ?>
                                             <b><?= round($stars, 2) ?></b>
@@ -137,12 +145,16 @@ $this->registerJs("
                                     </div>
                                     <?php if ($task->author_id == $user_id && $task->status == $task::STATUS_NEW && !$respond->decline): ?>
                                         <div class="feedback-card__actions">
-                                            <?= Html::a('Подтвердить',
-                                                ['tasks/choose', 'taskId' => $task->id, 'executorId' => $respond->executor_id],
-                                                ['class' => "button__small-color response-button button", 'type' => "button"]) ?>
-                                            <?= Html::a('Отказать',
-                                                ['tasks/decline', 'respondId' => $respond->id],
-                                                ['class' => 'button__small-color refusal-button button', 'type' => "button"]) ?>
+                                            <?= Html::a(
+                                                        'Подтвердить',
+                                                        ['tasks/choose', 'taskId' => $task->id, 'executorId' => $respond->executor_id],
+                                                        ['class' => "button__small-color response-button button", 'type' => "button"]
+                                                    ) ?>
+                                            <?= Html::a(
+                                                    'Отказать',
+                                                    ['tasks/decline', 'respondId' => $respond->id],
+                                                    ['class' => 'button__small-color refusal-button button', 'type' => "button"]
+                                                ) ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -164,8 +176,10 @@ $this->registerJs("
                         </div>
                     </div>
                     <p class="info-customer"><span>
-                             <?= PluralHelper::Plural(['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
-                                 $task->author->AuthorCountTasks) ?>
+                             <?= PluralHelper::Plural(
+                                                    ['заданий', 'задание', 'задание', 'задания', 'заданий', 'задания'],
+                                                    $task->author->AuthorCountTasks
+                                                ) ?>
                         </span><span class="last-">
                             <?= mb_substr(Yii::$app->formatter->asRelativeTime($task->author->dt_add), 0, -6, 'UTF-8') ?> на сайте
                         </span></p>
@@ -219,7 +233,8 @@ $this->registerJs("
 
     <?php $task->status = Tasks::STATUS_DONE ?>
     <?= $reviewForm->field($task, 'status', ['options' => ['tag' => false]])
-        ->radioList([Tasks::STATUS_DONE => 'Да', Tasks::STATUS_FAILED => 'Возникли проблемы?'],
+        ->radioList(
+            [Tasks::STATUS_DONE => 'Да', Tasks::STATUS_FAILED => 'Возникли проблемы?'],
             [
                 'item' => function ($index, $label, $name) {
                     $class = ['yes', 'difficult'];
@@ -228,7 +243,8 @@ $this->registerJs("
                      id='{$index}' type='radio' name='{$name}' value='{$_value[$index]}' ' >
                      <label class=\"completion-label completion-label--{$class[$index]}\" for='{$index}'>{$label}</label>";
                 }
-            ])->label(false) ?>
+            ]
+        )->label(false) ?>
 
     <?= $reviewForm->field($review, 'content', ['template' => "<p>{label}{input}</p>"])->textarea(['class' => 'input textarea',
         'rows' => 4, 'placeholder' => 'Place your text'])
@@ -243,8 +259,10 @@ $this->registerJs("
         <span class="star-disabled"></span>
     </div>
     </p>
-    <?= $reviewForm->field($review, 'ratio')->input('hidden',
-        ['id' => 'ratio'])->label(false) ?>
+    <?= $reviewForm->field($review, 'ratio')->input(
+            'hidden',
+            ['id' => 'ratio']
+        )->label(false) ?>
     <?= Html::button('Отправить', ['class' => 'button modal-button', 'type' => 'submit']) ?>
     <?php ActiveForm::end() ?>
     <button class="form-modal-close" type="button">Закрыть</button>
@@ -260,8 +278,11 @@ $this->registerJs("
     <button class="button__form-modal button" id="close-modal"
             type="button">Отмена
     </button>
-    <?= Html::a('Отказаться', ['tasks/refuse', 'taskId' => $task->id, 'executorId' => $task->executor_id],
-        ['class' => 'button__form-modal refusal-button button', 'type' => 'button']) ?>
+    <?= Html::a(
+            'Отказаться',
+            ['tasks/refuse', 'taskId' => $task->id, 'executorId' => $task->executor_id],
+            ['class' => 'button__form-modal refusal-button button', 'type' => 'button']
+        ) ?>
 
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>
@@ -275,8 +296,11 @@ $this->registerJs("
     <button class="button__form-modal button" id="close-modal"
             type="button">Отмена
     </button>
-    <?= Html::a('Отказаться', ['tasks/cancel', 'taskId' => $task->id],
-        ['class' => 'button__form-modal refusal-button button', 'type' => 'button']) ?>
+    <?= Html::a(
+            'Отказаться',
+            ['tasks/cancel', 'taskId' => $task->id],
+            ['class' => 'button__form-modal refusal-button button', 'type' => 'button']
+        ) ?>
 
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>

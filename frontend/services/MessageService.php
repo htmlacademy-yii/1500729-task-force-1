@@ -2,14 +2,19 @@
 
 namespace frontend\services;
 
-use common\models\User;
+use Exception;
 use frontend\models\Notifications;
 use frontend\models\Users;
 use Yii;
 
 class MessageService
 {
-    public function sendNotification($taskId, $recipientId)
+    /**
+     * @param int $taskId
+     * @param int $recipientId
+     * @throws Exception
+     */
+    public function sendNotification(int $taskId, int $recipientId)
     {
         $recipient = Users::findOne($recipientId);
         try {
@@ -17,12 +22,17 @@ class MessageService
             if ($recipient->notice_new_message == 1) {
                 $this->sendEmail($notification);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
 
-    private function newNotification($taskId, $recipientId)
+    /**
+     * @param int $taskId
+     * @param int $recipientId
+     * @return Notifications|void
+     */
+    private function newNotification(int $taskId, int $recipientId): Notifications
     {
         $notification = new Notifications();
         $notification->task_id = $taskId;

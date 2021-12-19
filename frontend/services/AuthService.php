@@ -21,7 +21,11 @@ class AuthService
         $this->client = $client;
     }
 
-    public function execute()
+    /**
+     * @return Users
+     * @throws Exception|\yii\base\Exception
+     */
+    public function execute(): Users
     {
         $db = Yii::$app->db;
         $transaction = $db->beginTransaction();
@@ -39,15 +43,18 @@ class AuthService
             $transaction->rollBack();
             throw $e;
         }
-
     }
 
-    private function newUser()
+    /**
+     * @return Users
+     * @throws \yii\base\Exception
+     */
+    private function newUser(): Users
     {
         $user = new Users();
         $user->name = $this->attributes['first_name'];
         $user->email = $this->attributes['email'];
-        $user->password = Yii::$app->security->generateRandomString(8);;
+        $user->password = Yii::$app->security->generateRandomString(8);
         $birthday = date('Y-m-d', strtotime($this->attributes['bdate']));
         $user->birthday = $birthday;
 
@@ -64,6 +71,11 @@ class AuthService
         return $user;
     }
 
+    /**
+     * @return int|void
+     * @throws Exception
+     * @throws \Exception
+     */
     private function getAvatar()
     {
         $vk_data_response = $this->client->api('users.get', 'POST', ['uids' => $this->attributes['id'], 'fields' => 'photo_max']);
@@ -79,7 +91,11 @@ class AuthService
         }
     }
 
-    private function newAuthUser($user_id)
+    /**
+     * @param int $user_id
+     * @throws Exception
+     */
+    private function newAuthUser(int $user_id)
     {
         $auth = new Auth([
             'user_id' => $user_id,
@@ -88,6 +104,6 @@ class AuthService
         ]);
         if (!$auth->save()) {
             throw new Exception('Ошибка при сохранении пользователя Auth', 500);
-        };
+        }
     }
 }

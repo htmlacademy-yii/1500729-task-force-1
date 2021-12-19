@@ -11,6 +11,14 @@ use yii\web\BadRequestHttpException;
 
 class TaskRespondService
 {
+    /**
+     * @param object|null $respondAuthor
+     * @param Responds $model
+     * @param array $data
+     * @param int $task_id
+     * @throws BadRequestHttpException
+     * @throws Exception
+     */
     public function execute(?object $respondAuthor, Responds $model, array $data, int $task_id): void
     {
         if (!$respondAuthor) {
@@ -21,13 +29,15 @@ class TaskRespondService
                 $model->save();
                 $this->sendNotification($task_id);
             }
-
         } else {
             throw new BadRequestHttpException('Вы уже откликались на это задание');
         }
-
     }
 
+    /**
+     * @param $task_id
+     * @throws Exception
+     */
     private function sendNotification($task_id)
     {
         $notification = new Notifications();

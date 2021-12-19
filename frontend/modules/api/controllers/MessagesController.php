@@ -34,7 +34,6 @@ class MessagesController extends ActiveController
 
         ]);
         return $dataProvider;
-
     }
 
     public function actionIndex()
@@ -69,7 +68,4 @@ class MessagesController extends ActiveController
             return $newMessage;
         }
     }
-
 }
-
-

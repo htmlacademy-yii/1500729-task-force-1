@@ -37,12 +37,12 @@ use Yii;
  */
 class Tasks extends \yii\db\ActiveRecord
 {
-    const STATUS_NEW = 0;
-    const STATUS_CANCEL = 1;
-    const STATUS_IN_WORK = 2;
-    const STATUS_DONE = 3;
-    const STATUS_FAILED = 4;
-    const STATUS_OVERDUE = 5;
+    public const STATUS_NEW = 0;
+    public const STATUS_CANCEL = 1;
+    public const STATUS_IN_WORK = 2;
+    public const STATUS_DONE = 3;
+    public const STATUS_FAILED = 4;
+    public const STATUS_OVERDUE = 5;
     /**
      * {@inheritdoc}
      */
@@ -192,34 +192,37 @@ class Tasks extends \yii\db\ActiveRecord
         return $this->hasMany(Notifications::class, ['task_id' => 'id']);
     }
 
-    public function getActions(int $user_id, ?object $respond_id) {
-          $activeActions = [];
+    public function getActions(int $user_id, ?object $respond_id)
+    {
+        $activeActions = [];
 
 
-          if ($this->executor_id !== $user_id && $user_id !== $this->author_id && $this->status === self::STATUS_NEW  && !$respond_id) {
-              $activeActions[] = ['response' => 'Откликнуться'];
-          }
-          if ($user_id === $this->author_id && $this->status === self::STATUS_NEW) {
-              $activeActions[] = ['action_cancel' => 'Отменить задачу'];
-          }
-          if ($user_id === $this->author_id && $this->status === self::STATUS_IN_WORK) {
-              $activeActions[] = ['request' => 'Завершить'];
-          }
-          if ($user_id === $this->executor_id && $this->status === self::STATUS_IN_WORK) {
-              $activeActions[] = ['refusal' => 'Отказаться'];
-          }
+        if ($this->executor_id !== $user_id && $user_id !== $this->author_id && $this->status === self::STATUS_NEW  && !$respond_id) {
+            $activeActions[] = ['response' => 'Откликнуться'];
+        }
+        if ($user_id === $this->author_id && $this->status === self::STATUS_NEW) {
+            $activeActions[] = ['action_cancel' => 'Отменить задачу'];
+        }
+        if ($user_id === $this->author_id && $this->status === self::STATUS_IN_WORK) {
+            $activeActions[] = ['request' => 'Завершить'];
+        }
+        if ($user_id === $this->executor_id && $this->status === self::STATUS_IN_WORK) {
+            $activeActions[] = ['refusal' => 'Отказаться'];
+        }
 
-          return $activeActions;
+        return $activeActions;
     }
-     public function validateCancel():bool {
+    public function validateCancel(): bool
+    {
         if ($this->author_id === Yii::$app->user->id && $this->status === self::STATUS_NEW) {
             return true;
         } else {
             return false;
         }
-     }
+    }
 
-     public function getStatus():array {
+    public function getStatus(): array
+    {
         $data = [
             self::STATUS_NEW => [
                 'new' => 'Новый'
@@ -238,5 +241,5 @@ class Tasks extends \yii\db\ActiveRecord
             ]
         ];
         return $data[$this->status];
-     }
+    }
 }

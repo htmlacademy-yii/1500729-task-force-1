@@ -27,8 +27,9 @@ class SettingsForm extends \yii\base\Model
 
 
 
-    public function rules() {
-          return [
+    public function rules()
+    {
+        return [
               [['name'], 'required'],
               ['name', 'string'],
               ['email', 'email'],
@@ -53,10 +54,10 @@ class SettingsForm extends \yii\base\Model
           ];
     }
 
-    public function validatePassword($attribute, $params) {
+    public function validatePassword($attribute, $params)
+    {
         if ($this->password && !$attribute) {
             $this->addError($attribute, "Введите пароль повторно");
         }
     }
-
 }

@@ -41,7 +41,8 @@ class Reviews extends \yii\db\ActiveRecord
         ];
     }
 
-    public function validateUser($attribute, $params) {
+    public function validateUser($attribute, $params)
+    {
         if ($this->task->author_id !== Yii::$app->user->id) {
             $this->addError($attribute, 'Завершить задание может только его автор');
         }

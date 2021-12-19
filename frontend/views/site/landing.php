@@ -2,10 +2,13 @@
 
 /* @var $this \yii\web\View */
 /* @var $content string */
-/* @var $loginForm \frontend\models\LoginForm */
+/* @var $loginForm \frontend\models\LoginForm
+ *@var $tasks \frontend\models\Tasks
+ */
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\helpers\StringHelper;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\widgets\Breadcrumbs;
@@ -79,7 +82,7 @@ AppAsset::register($this);
                 <p>Сломался кран на кухне? Надо отправить документы? Нет времени самому гулять с собакой?
                     У нас вы быстро найдёте исполнителя для любой жизненной ситуации?<br>
                     Быстро, безопасно и с гарантией. Просто, как раз, два, три. </p>
-                <?= Html::a('<button class="button">Создать аккаунт</button>', ['registration/index'] )?>
+                <?= Html::a('<button class="button">Создать аккаунт</button>', ['registration/index'])?>
             </div>
             <div class="landing-center">
                 <div class="landing-instruction">
@@ -164,67 +167,25 @@ AppAsset::register($this);
            <div class="landing-bottom">
                <div class="landing-bottom-container">
                    <h2>Последние задания на сайте</h2>
+                   <?php foreach ($tasks as $task): ?>
                    <div class="landing-task">
-                       <div class="landing-task-top task-courier"></div>
+                       <div class="landing-task-top task-<?= $task->category->icon ?>"></div>
                        <div class="landing-task-description">
-                           <h3><a href="#" class="link-regular">Подключить принтер</a></h3>
-                           <p>Необходимо подключить старый матричный принтер, у него еще LPT порт…</p>
+                           <h3><a href="#" class="link-regular"><?= $task->title  ?></a></h3>
+                           <p><?= StringHelper::truncate($task->description, 50, '...') ?></p>
                        </div>
+
                        <div class="landing-task-info">
                            <div class="task-info-left">
-                               <p><a href="#" class="link-regular">Курьерские услуги</a></p>
-                               <p>25 минут назад</p>
+                               <p><a href="#" class="link-regular"><?= $task->category->title ?></a></p>
+                               <p><?= Yii::$app->formatter->format($task->dt_add, 'relativeTime') ?></p>
                            </div>
-                           <span>700 <b>₽</b></span>
+                           <?php if($task->budget): ?>
+                           <span><?= $task->budget ?> <b>₽</b></span>
+                           <?php endif ?>
                        </div>
                    </div>
-                   <div class="landing-task">
-                       <div class="landing-task-top task-cargo"></div>
-                       <div class="landing-task-description">
-                           <h3><a href="#" class="link-regular">Офисный переезд</a></h3>
-                           <p>Требуется перевезти офисную мебель
-                               и технику из расчета 5 сотрудников</p>
-                       </div>
-                       <div class="landing-task-info">
-                           <div class="task-info-left">
-                               <p><a href="#" class="link-regular">Грузоперевозки</a></p>
-                               <p>25 минут назад</p>
-                           </div>
-                           <span>1 800 <b>₽</b></span>
-                       </div>
-                   </div>
-                   <div class="landing-task">
-                       <div class="landing-task-top task-neo"></div>
-                       <div class="landing-task-description">
-                           <h3><a href="#" class="link-regular">Убраться в квартире</a></h3>
-                           <p>Моей хате давно нужна генеральная уборка.
-В наличии есть только пылесос. </p>
-                       </div>
-                       <div class="landing-task-info">
-                           <div class="task-info-left">
-                               <p><a href="#" class="link-regular">Уборка</a></p>
-                               <p>1 час назад</p>
-                           </div>
-                           <span>2000 <b>₽</b></span>
-                       </div>
-                   </div>
-                   <div class="landing-task">
-                       <div class="landing-task-top task-flat"></div>
-                       <div class="landing-task-description">
-                           <h3><a href="#" class="link-regular">Празднование ДР</a></h3>
-                           <p>Моему другу нужно
-                               устроить день рождения,
-                               который он никогда не
-                               забудет</p>
-                       </div>
-                       <div class="landing-task-info">
-                           <div class="task-info-left">
-                               <p><a href="#" class="link-regular">Мероприятия</a></p>
-                               <p>1 час назад</p>
-                           </div>
-                           <span>2000 <b>₽</b></span>
-                       </div>
-                   </div>
+                   <?php endforeach; ?>
                </div>
                <div class="landing-bottom-container">
                    <button type="button" class="button red-button">смотреть все задания</button>

@@ -63,35 +63,40 @@ $this->title = 'Задания';
                     <legend>Категории</legend>
 
                     <?= $form->field($model, 'category_id', ['options' => ['tag' => false]])
-                        ->checkboxList(ArrayHelper::map($categories, 'id', 'title'),
+                        ->checkboxList(
+                            ArrayHelper::map($categories, 'id', 'title'),
                             [
                                 'item' => function ($index, $label, $name, $checked, $value) use ($model) {
-
                                     $checked = $checked ? 'checked' : '';
                                     return '<label class="checkbox__legend">
                                              <input class="visually-hidden checkbox__input" id="' . $index . '" type="checkbox" name="'.$name.'" value=' . $value . ' ' . $checked . '>
                                              <span>' . $label . '</span>
                                              </label>';
-                                }])->label(false) ?>
+                                }]
+                        )->label(false) ?>
                 </fieldset>
                 <fieldset class="search-task__categories">
                     <legend>Дополнительно</legend>
                     <?= $form->field($model, 'options')
-                        ->checkboxList($model->getOptions(),
+                        ->checkboxList(
+                            $model->getOptions(),
                             [
                                 'item' => function ($index, $label, $name, $checked, $value) use ($model) {
-
                                     $checked = $checked ? 'checked' : '';
                                     return '<label class="checkbox__legend">
                                              <input class="visually-hidden checkbox__input" id="' . $index . '" type="checkbox" name="' . $name . '" value=' . $value . ' ' . $checked . '>
                                              <span>' . $label . '</span  >
                                              </label>';
-                                }])->label(false) ?>
+                                }]
+                        )->label(false) ?>
                 </fieldset>
                 <?= $form->field($model, 'period', ['options' =>
                     ['class' => 'field-container']])->dropDownList($model->getDataTimes(), ['class' => 'multiple-select input', 'prompt' => ''])->label('Период', ['class' => 'search-task__name']) ?>
-                <?= $form->field($model, 'search', ['options' => ['tag' => false],]
-                )->textInput(['class' => 'input-middle input', 'type' => 'search'])->label('Поиск по названию', ['class' => 'search-task__name']) ?>
+                <?= $form->field(
+                        $model,
+                        'search',
+                        ['options' => ['tag' => false],]
+                    )->textInput(['class' => 'input-middle input', 'type' => 'search'])->label('Поиск по названию', ['class' => 'search-task__name']) ?>
                 <?= Html::submitButton('Искать', ['class' => 'button']) ?>
                 <?php ActiveForm::end() ?>
             </div>

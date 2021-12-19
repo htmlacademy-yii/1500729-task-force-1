@@ -2,26 +2,30 @@
 
 namespace frontend\services;
 
+use Exception;
 use frontend\models\FilterTasks;
-use frontend\models\Tasks;
-use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
-
 
 class TaskFilterService
 {
-    public function filterTasks(object $task, array $data, FilterTasks $model)
+    /**
+     * @param object $task
+     * @param array $data
+     * @param FilterTasks $model
+     * @return object
+     * @throws Exception
+     */
+    public function filterTasks(object $task, array $data, FilterTasks $model): object
     {
-
         try {
             $model->load($data);
             if ($model->category_id) {
                 return $task->andFilterWhere(['IN', 'category_id', $model->category_id]);
             }
             if ($model->search) {
-                $model->options = NULL;
-                $model->category_id = NULL;
-                $model->period = NULL;
+                $model->options = null;
+                $model->category_id = null;
+                $model->period = null;
                 return $task->andFilterWhere(['LIKE', 'title', $model->search]);
             }
 
@@ -35,10 +39,8 @@ class TaskFilterService
                 return $task->andFilterWhere($model->getPeriod());
             }
             return $task;
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
-
 }

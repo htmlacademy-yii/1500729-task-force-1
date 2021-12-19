@@ -13,6 +13,8 @@ class m210723_160941_first_migration extends Migration
      */
     public function safeUp()
     {
+        $this->execute('ALTER DATABASE taskforce CHARACTER SET utf8 COLLATE utf8_general_ci;');
+
         $data = ['console/migrations/data/schema.sql',
             'console/migrations/data/categories.sql',
             'console/migrations/data/locations.sql'];

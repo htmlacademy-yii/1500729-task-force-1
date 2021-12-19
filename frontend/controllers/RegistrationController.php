@@ -1,19 +1,15 @@
 <?php
 
-
 namespace frontend\controllers;
 
-
 use frontend\models\Registration;
-use http\Client\Response;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\widgets\ActiveForm;
 
 class RegistrationController extends Controller
 {
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -28,9 +24,12 @@ class RegistrationController extends Controller
             ]
         ];
     }
-    public function actionIndex()
-    {
 
+    /**
+     * @return string
+     */
+    public function actionIndex(): string
+    {
         $model = new Registration();
         if (Yii::$app->request->post()) {
             $model->load(Yii::$app->request->post());

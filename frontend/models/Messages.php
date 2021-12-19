@@ -104,7 +104,8 @@ class Messages extends \yii\db\ActiveRecord
         return $this->hasOne(Users::class, ['id' => 'recipient_id']);
     }
 
-    public function isMine($user_id) {
+    public function isMine($user_id)
+    {
         if ($user_id !== $this->sender_id) {
             return true;
         } else {
