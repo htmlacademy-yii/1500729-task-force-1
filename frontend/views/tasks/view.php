@@ -187,6 +187,27 @@ $this->registerJs("
                 </div>
             </div>
             <?php if ($task->executor_id === $user_id || $task->executor_id && $task->author_id === $user_id): ?>
+                <div class="connect-desk__profile-mini">
+                    <div class="profile-mini__wrapper">
+                        <h3>Исполнитель</h3>
+                        <div class="profile-mini__top">
+                            <img src="<?= $task->executor->avatar ? $task->executor->avatar->path : '/img/man-glasses.jpg' ?>"
+                                 width="62" height="62" alt="Аватар исполнителя">
+                            <div class="profile-mini__name five-stars__rate">
+                                <p><?= $task->executor->name ?></p>
+                            </div>
+                        </div>
+                        <p class="info-customer"><span>
+                             <?= PluralHelper::Plural(
+                                 ['успешных заданий', 'успешное задание', 'успешное задание', 'успешного задания', 'успешных заданий', 'успешного задания'],
+                                 $task->executor->done_tasks
+                             ) ?>
+                        </span><span class="last-">
+                            <?= mb_substr(Yii::$app->formatter->asRelativeTime($task->executor->dt_add), 0, -6, 'UTF-8') ?> на сайте
+                        </span></p>
+                        <?= Html::a('Cмотреть профиль', ['users/view', 'id' => $task->executor_id], ['class' => 'link-regular']) ?>
+                    </div>
+                </div>
                 <div id="chat-container">
                     <!--                    добавьте сюда атрибут task с указанием в нем id текущего задания-->
                     <chat class="connect-desk__chat" task="<?= $task->id ?>" sender="<?= $user_id ?>"
