@@ -50,7 +50,7 @@ class SettingsForm extends \yii\base\Model
               ['notice_new_review', 'safe'],
               ['show_contacts', 'safe'],
               ['show_profile', 'safe'],
-              [['avatar'], 'file', 'extensions' => 'png, jpg'],
+              [['avatar'], 'file', 'extensions' => ['png', 'jpg', 'jpeg', 'gif']],
           ];
     }
 

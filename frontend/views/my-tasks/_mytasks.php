@@ -35,7 +35,7 @@ $getStatus = $model->getStatus();
     </p>
     <?php if ($model->executor_id): ?>
     <div class="feedback-card__top ">
-        <a href="#"><img src="/img/man-glasses.jpg" width="36" height="36"></a>
+        <a href="user.html"><img src="<?= $model->executor->avatar ? $model->executor->avatar->path : '/img/man-glasses.jpg' ?>" width="36" height="36"></a>
         <div class="feedback-card__top--name my-list__bottom">
             <p class="link-name"><?= Html::a(
                 $model->executor->name,
