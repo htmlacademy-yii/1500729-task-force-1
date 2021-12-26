@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\models;
-
 
 use Cassandra\Date;
 use yii\base\Model;
@@ -29,14 +27,16 @@ class FilterTasks extends Model
             ['search', 'safe']];
     }
 
-    public function getOptions() {
+    public function getOptions()
+    {
         return [
             1 => 'Без исполнителя',
             2 => 'Удаленная работа'
         ];
     }
 
-    public function getDataTimes() {
+    public function getDataTimes()
+    {
         return [
             'today' => 'За день',
             'week' => 'За неделю',
@@ -44,18 +44,19 @@ class FilterTasks extends Model
         ];
     }
 
-    public function getTasksWithoutResponds() {
+    public function getTasksWithoutResponds()
+    {
         $null = new Expression('NULL');
         return ['IS', 'task_id', $null];
     }
 
     public function getRemoteTasks()
     {
-
-        return ['location_id' => NULL];
+        return ['location_id' => null];
     }
 
-    public function getPeriod() {
+    public function getPeriod()
+    {
         if ($this->period == 'today') {
             $time = new \DateTime('today');
         }
@@ -68,5 +69,4 @@ class FilterTasks extends Model
         $time = $time->format('Y-m-d H:i:s');
         return ['>=', 'tasks.dt_add', $time];
     }
-
 }

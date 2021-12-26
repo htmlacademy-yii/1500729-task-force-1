@@ -1,6 +1,5 @@
 <?php
 
-
 namespace frontend\models;
 
 use Yii;
@@ -8,7 +7,6 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
-
 
 class FilterUsers extends Model
 {
@@ -41,7 +39,7 @@ class FilterUsers extends Model
 
     public function filterCategories()
     {
-            return (['IN', 'executor_categories.category_id', $this->category_id]);
+        return (['IN', 'executor_categories.category_id', $this->category_id]);
     }
 
     public function getOnlineUsers()
@@ -49,7 +47,6 @@ class FilterUsers extends Model
         $now = new \DateTime('-30 minutes');
         $now = $now->format('Y-m-d H:i:s');
         return ['>=', 'dt_last_activity', $now];
-
     }
 
     public function getUsersWithReviews()
@@ -74,7 +71,4 @@ class FilterUsers extends Model
         $null = new Expression('NULL');
         return ['IS', 'executor_id', $null];
     }
-
 }
-
-

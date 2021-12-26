@@ -27,8 +27,9 @@ class SettingsForm extends \yii\base\Model
 
 
 
-    public function rules() {
-          return [
+    public function rules()
+    {
+        return [
               [['name'], 'required'],
               ['name', 'string'],
               ['email', 'email'],
@@ -49,14 +50,14 @@ class SettingsForm extends \yii\base\Model
               ['notice_new_review', 'safe'],
               ['show_contacts', 'safe'],
               ['show_profile', 'safe'],
-              [['avatar'], 'file', 'extensions' => 'png, jpg'],
+              [['avatar'], 'file', 'extensions' => ['png', 'jpg', 'jpeg', 'gif']],
           ];
     }
 
-    public function validatePassword($attribute, $params) {
+    public function validatePassword($attribute, $params)
+    {
         if ($this->password && !$attribute) {
             $this->addError($attribute, "Введите пароль повторно");
         }
     }
-
 }

@@ -15,7 +15,8 @@ class RefuseTaskForm extends Model
         return [['user_id', 'validateUser']];
     }
 
-    public function validateUser($attribute, $params) {
+    public function validateUser($attribute, $params)
+    {
         if ($this->status !== Tasks::STATUS_IN_WORK && $attribute !== $this->executor_id) {
             $this->addError($attribute, 'Вы не можете отказаться от этого задания');
         }

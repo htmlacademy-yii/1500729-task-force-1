@@ -28,16 +28,16 @@ class Responds extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
     public static function tableName()
-        {
-            return 'responds';
-        }
+    {
+        return 'responds';
+    }
 
     /**
      * {@inheritdoc}
      */
     public function rules()
-        {
-            return [
+    {
+        return [
                 [['dt_add'], 'safe'],
                 [['budget', 'task_id', 'executor_id'], 'required'],
                 [['budget', 'task_id', 'executor_id'], 'integer'],
@@ -48,22 +48,23 @@ class Responds extends \yii\db\ActiveRecord
                 [['executor_id'], 'validateUser'],
                 [['decline'], 'validateAuthor']
             ];
-        }
+    }
 
-    public function validateUser($attribute, $params) {
-            if ($this->task->author_id === $attribute || $this->executor->role !== Users::ROLE_EXECUTOR) {
+    public function validateUser($attribute, $params)
+    {
+        if ($this->task->author_id === $attribute || $this->executor->role !== Users::ROLE_EXECUTOR) {
             $this->addError($attribute, 'Откликаться на задания могут только исполнители');
         }
-            if ($this->task->executor_id) {
-                $this->addError($attribute, 'На это задание уже выбран исполнитель');
-            }
+        if ($this->task->executor_id) {
+            $this->addError($attribute, 'На это задание уже выбран исполнитель');
+        }
     }
 
     public function validateAuthor($attribute)
     {
-         if($this->task->author_id !== Yii::$app->user->id) {
-             $this->addError($attribute, 'Отклонить отклик может только автор');
-         }
+        if ($this->task->author_id !== Yii::$app->user->id) {
+            $this->addError($attribute, 'Отклонить отклик может только автор');
+        }
     }
 
     /**

@@ -4,45 +4,33 @@ namespace frontend\controllers;
 
 /** @var $client VKontakte */
 
-use common\models\User;
 use frontend\models\Auth;
-use frontend\models\Files;
-use frontend\models\Locations;
-use frontend\models\ResendVerificationEmailForm;
+use frontend\models\LoginForm;
+use frontend\models\Tasks;
 use frontend\models\Users;
-use frontend\models\VerifyEmailForm;
 use frontend\services\AuthService;
 use Yii;
 use yii\authclient\clients\VKontakte;
-use yii\base\InvalidArgumentException;
-use yii\db\Exception;
-use yii\helpers\ArrayHelper;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
-use frontend\models\ContactForm;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
 /**
  * Site controller
  */
+
 class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['index'],
+                'only' => ['index', 'auth'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -50,7 +38,8 @@ class SiteController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['@'],
+                        'actions' => ['index']
                     ]
                 ]
             ]
@@ -58,7 +47,7 @@ class SiteController extends Controller
     }
 
 
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -75,34 +64,29 @@ class SiteController extends Controller
         ];
     }
 
-    public function onAuthSuccess($client)
+    public function onAuthSuccess($client): Response
     {
         $attributes = $client->getUserAttributes();
 
         $auth = Auth::find()->where(['source' => $client->getId(),
             'source_id' => $attributes['id']])->one();
 
-        if (Yii::$app->user->isGuest) {
-            if ($auth) {
-                $user = $auth->user;
+        if ($auth) {
+            $user = $auth->user;
+            Yii::$app->user->login($user);
+            Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
+            return $this->redirect(['tasks/index']);
+        } else {
+            if (isset($attributes['email']) && Users::find()->where(['email' => $attributes['email']])->exists()) {
+                throw new \yii\base\Exception('Пользователь с таким Email уже зарегистрирован');
+            } else {
+                $user = (new AuthService($attributes, $client))->execute();
                 Yii::$app->user->login($user);
                 Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
                 return $this->redirect(['tasks/index']);
-            } else {
-                if (isset($attributes['email']) && Users::find()->where(['email' => $attributes['email']])->exists()) {
-                    throw new \yii\base\Exception('Пользователь с таким Email уже зарегистрирован');
-                } else {
-                    $user = (new AuthService($attributes, $client))->execute();
-                    Yii::$app->user->login($user);
-                    Yii::$app->session->set('location_id', Yii::$app->user->getIdentity()->location_id);
-                    return $this->redirect(['tasks/index']);
-                }
-
             }
-
         }
     }
-
 
 
     public function actionIndex()
@@ -110,14 +94,16 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->redirect(['tasks/index']);
         }
+
+        $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])->orderBy('dt_add DESC')->limit(4)->all();
+
         $this->layout = false;
-        $loginForm = new \frontend\models\LoginForm();
+        $loginForm = new LoginForm();
         if (\Yii::$app->request->getIsPost()) {
             $loginForm->load(\Yii::$app->request->post());
             if (\Yii::$app->request->isAjax) {
                 \Yii::$app->response->format = Response::FORMAT_JSON;
                 return ActiveForm::validate($loginForm);
-
             }
             if ($loginForm->validate()) {
                 $user = $loginForm->getUser();
@@ -126,17 +112,14 @@ class SiteController extends Controller
                 return $this->redirect(['tasks/index']);
             }
         }
-        return $this->render('landing', ['loginForm' => $loginForm]);
+        return $this->render('landing', ['loginForm' => $loginForm, 'tasks' => $tasks]);
     }
 
 
-
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
-
-
 }

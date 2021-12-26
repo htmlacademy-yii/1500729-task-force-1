@@ -3,13 +3,18 @@
 namespace frontend\services;
 
 use frontend\models\Notifications;
-use frontend\models\RefuseTaskForm;
 use frontend\models\Tasks;
 use frontend\models\Users;
 use Yii;
+use yii\db\Exception;
 
 class TaskRefuseService
 {
+    /**
+     * @param Tasks $task
+     * @param int $executorId
+     * @throws Exception
+     */
     public function execute(Tasks $task, int $executorId)
     {
         $db = Yii::$app->db;
@@ -23,7 +28,6 @@ class TaskRefuseService
             $transaction->rollBack();
             throw $e;
         }
-
     }
 
     private function updateTask(Tasks $task)
@@ -34,7 +38,7 @@ class TaskRefuseService
 
     private function updateExecutor(int $executorId)
     {
-        $executor = $executorId = Users::findOne($executorId);
+        $executor = Users::findOne($executorId);
         if ($executor->failed_tasks) {
             $executor->updateCounters(['failed_tasks' => 1]);
         } else {
@@ -51,8 +55,9 @@ class TaskRefuseService
         $notification->type = 'refuse';
         if ($notification->validate()) {
             $notification->save();
-            if ($notification->recipient->notice_new_action == 1)
+            if ($notification->recipient->notice_new_action == 1) {
                 $this->sendEmail($notification);
+            }
         }
     }
 
@@ -64,6 +69,4 @@ class TaskRefuseService
             ->setSubject('Исполнитель отказался от выполнения задания')
             ->send();
     }
-
-
 }

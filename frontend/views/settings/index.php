@@ -29,18 +29,20 @@ use yii\helpers\ArrayHelper;
                                 'tag' => false
                             ],
                             'template' => "{input}\n{label}\n{error}"
-                        ])->fileInput(['id' => 'upload-avatar'])->label('Сменить аватар',['class' => 'link-regular']) ?>
+                        ])->fileInput(['id' => 'upload-avatar'])->label('Сменить аватар', ['class' => 'link-regular']) ?>
 
                     </div>
                     <div class="account__redaction">
                         <div class="account__input account__input--name">
                             <?=
-                            $form->field($model, 'name', ['options' => ['class' => 'field-container account__input account__input--name']])->textInput(['class' => 'input textarea', 'disabled' => true]
+                            $form->field($model, 'name', ['options' => ['class' => 'field-container account__input account__input--name']])->textInput(
+                                ['class' => 'input textarea', 'disabled' => true]
                             )->label('Ваше имя') ?>
                         </div>
                         <div class="account__input account__input--email">
                             <?=
-                            $form->field($model, 'email', ['options' => ['class' => 'field-container account__input account__input--email']])->textInput(['class' => 'input textarea']
+                            $form->field($model, 'email', ['options' => ['class' => 'field-container account__input account__input--email']])->textInput(
+                                ['class' => 'input textarea']
                             )->label('Email') ?>
                         </div>
                         <div class="account__input account__input--name">
@@ -55,8 +57,11 @@ use yii\helpers\ArrayHelper;
                         </div>
 
                         <?=
-                        $form->field($model, 'birthday',
-                            ['options' => ['class' => 'account__input account__input--date']])
+                        $form->field(
+                            $model,
+                            'birthday',
+                            ['options' => ['class' => 'account__input account__input--date']]
+                        )
                             ->input('date', ['class' => 'input-middle input input-date'])->
                             label('День Рождения') ?>
                         <?=
@@ -113,7 +118,7 @@ use yii\helpers\ArrayHelper;
 
             <h3 class="div-line">Фото работ</h3>
 
-            <?php if($user->workPhotos): ?>
+            <?php if ($user->workPhotos): ?>
                 <?php foreach ($user->workPhotos as $photo): ?>
                     <img src="<?= $photo->file->path ?>" width="156" height="156" alt="Фото работы">
                 <?php endforeach; ?>

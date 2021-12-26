@@ -1,18 +1,20 @@
 <?php
 
-
 namespace frontend\controllers;
 
-
 use GuzzleHttp\Client;
-
 use Yii;
 use yii\caching\TagDependency;
 use yii\web\Response;
 
 class GeoController extends SecuredController
 {
-    public function actionIndex($query)
+    /**
+     * @param string $query
+     * @return Response
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function actionIndex(string $query): Response
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $redisQuery = md5($query);
@@ -39,9 +41,11 @@ class GeoController extends SecuredController
         }
     }
 
-    public function actionLocation($location_id)
+    /**
+     * @param int $location_id
+     */
+    public function actionLocation(int $location_id): void
     {
-
         Yii::$app->session->set('location_id', $location_id);
     }
 }

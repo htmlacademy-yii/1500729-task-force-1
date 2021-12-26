@@ -47,9 +47,9 @@ use yii\web\IdentityInterface;
  */
 class Users extends \yii\db\ActiveRecord implements IdentityInterface
 {
-    const ROLE_EXECUTOR = 1;
-    const ROLE_AUTHOR = 0;
-        /**
+    public const ROLE_EXECUTOR = 1;
+    public const ROLE_AUTHOR = 0;
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -186,7 +186,6 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getAvatar()
     {
-
         return $this->hasOne(Files::class, ['id' => 'avatar_id']);
     }
 
@@ -200,7 +199,8 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
         return $this->hasMany(WorkPhotos::class, ['user_id' => 'id']);
     }
 
-    public static function calculateStars ($id) {
+    public static function calculateStars($id)
+    {
         $userTasksQuery = (new Query())->select('id')->from('tasks')->where('executor_id = :executor_id', [':executor_id' => $id]);
         $query = new Query();
         $query->select(['AVG(ratio)'])->from('reviews')->
@@ -233,8 +233,9 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
         return $this->hasMany(Favourites::class, ['executor_id' => 'id']);
     }
 
-    public function getAuthorCountTasks() {
-         return $this->hasMany(Tasks::class, ['author_id' => 'id'])->count();
+    public function getAuthorCountTasks()
+    {
+        return $this->hasMany(Tasks::class, ['author_id' => 'id'])->count();
     }
 
     public static function findIdentity($id)
@@ -244,7 +245,6 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // TODO: Implement findIdentityByAccessToken() method.
     }
 
     public function getId()
@@ -254,12 +254,10 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
 
     public function getAuthKey()
     {
-        // TODO: Implement getAuthKey() method.
     }
 
     public function validateAuthKey($authKey)
     {
-        // TODO: Implement validateAuthKey() method.
     }
     public function validatePassword($password)
     {

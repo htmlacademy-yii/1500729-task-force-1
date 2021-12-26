@@ -1,16 +1,13 @@
 <?php
 
-
 namespace frontend\controllers;
 
-
-use frontend\models\Users;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
 abstract class SecuredController extends Controller
 {
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [

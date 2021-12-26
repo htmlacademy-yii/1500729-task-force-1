@@ -107,7 +107,7 @@ if (!Yii::$app->user->isGuest) {
                     </li>
                 </ul>
             </div>
-            <?php if(Yii::$app->controller->id !== 'registration'): ?>
+            <?php if (Yii::$app->controller->id !== 'registration'): ?>
             <div class="header__town">
                 <?= \kartik\select2\Select2::widget([
                     'data' => \frontend\models\Registration::getLocations(),
@@ -210,7 +210,7 @@ if (!Yii::$app->user->isGuest) {
                 </a>
             </div>
 
-            <?php if(Yii::$app->controller->id === 'registration'): ?>
+            <?php if (Yii::$app->controller->id === 'registration'): ?>
             <div class="clipart-woman">
                 <img src="/img/clipart-woman.png" width="238" height="450">
             </div>

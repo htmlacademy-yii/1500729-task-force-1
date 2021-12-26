@@ -7,12 +7,17 @@ use frontend\models\TaskFiles;
 use frontend\models\TaskForm;
 use frontend\models\Tasks;
 use Yii;
+use yii\db\Exception;
 
 class TaskCreateService
 {
+    /**
+     * @param TaskForm $task
+     * @return int
+     * @throws Exception
+     */
     public function execute(TaskForm $task): int
     {
-
         $db = Yii::$app->db;
         $transaction = $db->beginTransaction();
         try {
@@ -31,10 +36,14 @@ class TaskCreateService
             $transaction->rollBack();
             throw $e;
         }
-
     }
 
-    private function createFiles($file, $name): int
+    /**
+     * @param $file
+     * @param string $name
+     * @return int
+     */
+    private function createFiles($file, string $name): int
     {
         $file_path = new Files();
         $file_path->path = '/uploads/' . $file;
@@ -43,7 +52,12 @@ class TaskCreateService
         return $file_path->id;
     }
 
-    private function createTaskFiles($file_id, $task_id): TaskFiles
+    /**
+     * @param int $file_id
+     * @param int $task_id
+     * @return TaskFiles
+     */
+    private function createTaskFiles(int $file_id, int $task_id): TaskFiles
     {
         $task_file = new TaskFiles();
         $task_file->file_id = $file_id;
@@ -51,7 +65,11 @@ class TaskCreateService
         return $task_file;
     }
 
-    private function createTask(TaskForm $taskForm)
+    /**
+     * @param TaskForm $taskForm
+     * @return int
+     */
+    private function createTask(TaskForm $taskForm): int
     {
         $author = \Yii::$app->user->identity;
         $task = new Tasks();

@@ -1,7 +1,7 @@
 CREATE TABLE files
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
-    path VARCHAR(128) NOT NULL
+    path VARCHAR(1000) NOT NULL
 );
 
 CREATE TABLE locations
@@ -18,12 +18,6 @@ CREATE TABLE categories
     id    INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(32) NOT NULL UNIQUE,
     icon  VARCHAR(32)
-);
-
-CREATE TABLE cities
-(
-    id   INT AUTO_INCREMENT PRIMARY KEY,
-    city VARCHAR(64)
 );
 
 CREATE TABLE users

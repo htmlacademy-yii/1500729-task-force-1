@@ -2,7 +2,9 @@
 
 use frontend\models\Tasks;
 use yii\helpers\Html;
-use yii\widgets\ListView; ?>
+use yii\widgets\ListView;
+
+?>
 
 <main class="page-main">
     <div class="main-container page-container">
@@ -17,7 +19,7 @@ use yii\widgets\ListView; ?>
                     </div>
                     <?= Html::a('Завершенные', ['my-tasks/index', 'status' => Tasks::STATUS_DONE])?>
                 </li>
-                <?php if(Yii::$app->user->getIdentity()->role === \frontend\models\Users::ROLE_AUTHOR): ?>
+                <?php if (Yii::$app->user->getIdentity()->role === \frontend\models\Users::ROLE_AUTHOR): ?>
                 <li class="menu-toggle__item <?= Yii::$app->request->get('status') == Tasks::STATUS_NEW ? 'menu_toggle__item--current' : '' ?> menu-toggle__item--new">
                     <div class="menu-toggle__svg-wrapper">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

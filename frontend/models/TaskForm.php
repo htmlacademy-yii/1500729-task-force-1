@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\models;
-
 
 use yii\base\Model;
 
@@ -35,10 +33,10 @@ class TaskForm extends Model
         ];
     }
 
-    public function validateValue($attribute, $params) {
+    public function validateValue($attribute, $params)
+    {
         if (!$this->coordinates && $attribute) {
             $this->addError($attribute, "Пожалуйста, выберите адрес из выпадающего списка");
         }
     }
-
 }
